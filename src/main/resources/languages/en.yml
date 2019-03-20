@@ -1,0 +1,5 @@
+PermissionDenied: '&cYou do not have permission.'
+
+InvalidArgument: '&cInvalid argument'
+
+NameChangeNotification: '&7* &b %OLDNAME% &7got his name changed. His new name is:&b %NEWNAME%&7.'

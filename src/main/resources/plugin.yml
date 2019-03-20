@@ -1,0 +1,16 @@
+main: net.okocraft.renamedplayers.RenamedPlayers
+name: ${project.artifactId}
+version: ${project.version}
+description: "Execute some actions when renamed players joined."
+authors: [okocraft]
+api-version: "1.13"
+
+permissions:
+  renamedplayers.admin:
+    default: op
+
+commands:
+  renamedplayers:
+    aliases: [rp]
+    description: "Command for RenamedPlayers"
+    permission: renamedplayers.admin

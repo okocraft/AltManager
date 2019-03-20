@@ -1,0 +1,25 @@
+#Language file. Any name can allowed but does not exist.
+LanguageFile: 'ja.yml'
+
+#If this option is true, detected Change of Name will saved in history.txt
+LogPlayerNameChange: true
+
+#If this option is true, all online players will see detected change of name in their chat. 
+NotifyNameChange: true
+
+#If this option is true, console command written here will be executed.
+#%OLDNAME% will be replaced to the name before changed.
+#%NEWNAME% will be new name.
+ExecuteCommandOnNameChange: true
+Commands:
+- 'broadcast &7* &b%OLDNAME% &7has changed its name. New one is: &b%NEWNAME%'
+
+#If ScoreboardMigration is true, new player-name entry will have all old player-name entry's score on any objective.
+#For example,
+# OldMan have 1 point on "test" objective
+#  ↓ after changing name into NewMan
+# NewMan have 1 point on "test" objective
+#
+#And then, if ResetOldScore is set true, Entry Named OldMan will lose all migrated score.
+ScoreboardMigration: true
+ResetOldScore: true

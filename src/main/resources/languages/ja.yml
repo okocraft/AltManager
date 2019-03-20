@@ -1,0 +1,5 @@
+PermissionDenied: '&c権限がありません。'
+
+InvalidArgument: '&c引数が不正です。'
+
+NameChangeNotification: '&7* &b%OLDNAME% &7は改名して&b %NEWNAME% &7になったようだ'
