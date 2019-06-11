@@ -5,7 +5,13 @@ LanguageFile: 'ja.yml'
 LogPlayerNameChange: true
 
 #If this option is true, all online players will see detected change of name in their chat. 
-NotifyNameChange: true
+NotifyRename: true
+
+#If this option is true, players will see renamed player's old name on joining. 
+NotifyPreviousNameOnJoin: true
+
+#How long should we notify previous name for the player? in day.
+NofifyPreviousNameTerm: 14
 
 #If this option is true, console command written here will be executed.
 #%OLDNAME% will be replaced to the name before changed.
@@ -23,3 +29,5 @@ Commands:
 #And then, if ResetOldScore is set true, Entry Named OldMan will lose all migrated score.
 ScoreboardMigration: true
 ResetOldScore: true
+
+InventoryBackupInterval: 30

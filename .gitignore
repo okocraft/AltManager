@@ -55,4 +55,4 @@ buildNumber.properties
 
 # IntelliJ IDEA
 .idea
-RenamedPlayers.iml
+PlayerManager.iml

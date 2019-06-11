@@ -1,4 +1,4 @@
-package net.okocraft.renamedplayers.database;
+package net.okocraft.playermanager.database;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -16,16 +16,10 @@ public class StatementRunner implements Runnable {
 
     @Override
     public void run() {
-        try {
+        try (Statement stmt = statement) {
             statement.executeBatch();
         } catch (SQLException exception) {
             exception.printStackTrace();
-        } finally {
-            try {
-                statement.close();
-            } catch (SQLException exception) {
-                exception.printStackTrace();
-            }
         }
     }
 

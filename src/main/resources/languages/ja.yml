@@ -2,4 +2,26 @@ PermissionDenied: '&c権限がありません。'
 
 InvalidArgument: '&c引数が不正です。'
 
+NoEnoughArguments: '&c引数が足りません。'
+
 NameChangeNotification: '&7* &b%OLDNAME% &7は改名して&b %NEWNAME% &7になったようだ'
+
+NoPlayerFound: '&b%player%&7というプレイヤーは見つかりませんでした。'
+
+SenderMustBePlayer: '&cこのコマンドはプレイヤーにしか実行できません。'
+
+PageFooter: '&f=== %page% ページ目 ==='
+
+CommandNotExist: '&c%command% というコマンドは存在しません。'
+
+InventoryBackupSuccess: '&7* %player% のインベントリのバックアップに成功しました。'
+
+DatabaseAddPlayerSuccess: '&7データベースに&b%uuid% &7- &b%player%&7を追加しました。'
+
+DatabaseRemovePlayerSuccess: '&7データベースから&b%uuid% &7- &b%player%&7を削除しました。'
+
+DatabaseNoColumnFound: '&cその名前の列はありません。'
+
+DatabaseSetValueSuccess: '&7&b%uuid% &7(&b%player%&7)の&b%column%&7を&b%Value%&7にセットしました。'
+
+BroadcastedPreviousName: '&7* &b%player% の昔の名前は &b%oldname% &7です。'

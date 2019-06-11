@@ -1,4 +1,4 @@
-package net.okocraft.renamedplayers.database;
+package net.okocraft.playermanager.database;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
