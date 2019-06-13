@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +26,14 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import net.okocraft.playermanager.PlayerManager;
 import net.okocraft.playermanager.database.Database;
+import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.ConfigManager;
 import net.okocraft.playermanager.utilities.InventoryUtil;
 
 public class PlayerJoin implements Listener {
 
     private final Database database;
+    private final PlayerTable playerTable;
     private final ConfigManager config;
 
     private String nameChangeMsg;
@@ -39,6 +42,7 @@ public class PlayerJoin implements Listener {
     public PlayerJoin(Plugin plugin, Database database) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.database = database;
+        this.playerTable = database.getPlayerTable();
         this.config = ((PlayerManager) plugin).getConfigManager();
     }
 
@@ -46,22 +50,62 @@ public class PlayerJoin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
+        String address = player.getAddress().getAddress().getHostName();
         String Uuid = player.getUniqueId().toString();
         String joinedPlayerName = player.getName();
-        String beforePlayerName = database.get("player", Uuid);
+        String beforePlayerName = playerTable.getPlayerData("player", Uuid);
+        String oldAddress = playerTable.getPlayerData("address", Uuid);
 
-        if (!database.existPlayer(Uuid)) {
-            database.addPlayer(Uuid, joinedPlayerName, false);
+        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
+
+        if (!playerTable.existPlayer(Uuid)) {
+            database.insert(playerTable.getPlayerTableName(), new HashMap<String, String>(){
+                private static final long serialVersionUID = 1L;
+                {
+                    put("uuid", Uuid);
+                    put("player", joinedPlayerName);
+                    put("address", address);
+                }
+            });
         } else if (!joinedPlayerName.equalsIgnoreCase(beforePlayerName)) {
             onNameChanged(player, joinedPlayerName, beforePlayerName);
         }
 
-        String renameLogOnDate = database.get("renamelogondate", Uuid);
-        LocalDateTime term = LocalDateTime.parse(renameLogOnDate, InventoryUtil.getFormat()).plusDays(config.getNotifyPreviousNameTerm());
-        LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
-        if (!renameLogOnDate.equalsIgnoreCase("null") && config.isNotifyPreviousNameEnabled() && term.compareTo(now) >= 0) {
-            Bukkit.broadcastMessage(config.getNotifyPreviousNameMsg().replaceAll("%oldname%", database.get("previous", Uuid)).replaceAll("%newname%", beforePlayerName));
+        if (!oldAddress.equals(address))
+            database.set(playerTable.getPlayerTableName(), "address", address, "address", oldAddress);
+
+        playerTable.setPlayerData("address", Uuid, address);
+        List<String> accounts = database.get(playerTable.getPlayerTableName(), "player", "address", address);
+        if (accounts.size() > 1) {
+            StringBuilder sb = new StringBuilder();
+
+            accounts.forEach(alt -> {
+                if (!alt.equalsIgnoreCase(joinedPlayerName)) {
+                    sb.append(alt + ", ");
+                }
+            });
+
+            Bukkit.getOnlinePlayers().stream()
+                    .filter(onlinePlayer -> onlinePlayer.hasPermission("playermanager.alt.search"))
+                    .forEach(onlinePlayer -> onlinePlayer
+                            .sendMessage(config.getShowAltsOnJoinMsg().replaceAll("%player%", joinedPlayerName)
+                                    .replaceAll("%alts%", sb.substring(0, sb.length() - 2).toString())));
         }
+
+        String renameLogOnDate = playerTable.getPlayerData("renamelogondate", Uuid);
+
+        try {
+            LocalDateTime term = LocalDateTime.parse(renameLogOnDate, InventoryUtil.getFormat())
+                    .plusDays(config.getNotifyPreviousNameTerm());
+            if (config.isNotifyPreviousNameEnabled() && term.compareTo(now) >= 0) {
+                Bukkit.broadcastMessage(config.getNotifyPreviousNameMsg()
+                        .replaceAll("%oldname%", playerTable.getPlayerData("previous", Uuid))
+                        .replaceAll("%player%", joinedPlayerName));
+            }
+        } catch (DateTimeParseException exception) {
+            playerTable.setPlayerData("renamelogondate", Uuid, LocalDateTime.MIN.format(InventoryUtil.getFormat()));
+        }
+
     }
 
     private void onNameChanged(Player player, String newName, String oldName) {
@@ -74,7 +118,7 @@ public class PlayerJoin implements Listener {
                 put("renamelogondate", LocalDateTime.now(ZoneId.systemDefault()).format(InventoryUtil.getFormat()));
             }
         };
-        database.setMultiValue(newValues, uuid);
+        playerTable.setPlayerDataMultiValue(newValues, uuid);
 
         if (config.isLoggingEnabled())
             logNameChange(uuid, newName, oldName);
@@ -101,12 +145,12 @@ public class PlayerJoin implements Listener {
 
             bw.close();
         } catch (IOException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 
     private void notifyNameChange(String uuid, String newName, String oldName) {
-        nameChangeMsg = config.getNameChangeMsg().replaceAll("%OLDNAME%", oldName).replaceAll("%NEWNAME%", newName);
+        nameChangeMsg = config.getNameChangeMsg().replaceAll("%oldname%", oldName).replaceAll("%newname%", newName);
         Bukkit.broadcastMessage(nameChangeMsg);
     }
 
@@ -115,7 +159,7 @@ public class PlayerJoin implements Listener {
 
         commands.forEach(command -> {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replaceAll("&([a-f0-9])", "§$1")
-                    .replaceAll("%OLDNAME%", oldName).replaceAll("%NEWNAME%", newName));
+                    .replaceAll("%oldname%", oldName).replaceAll("%newname%", newName));
         });
     }
 

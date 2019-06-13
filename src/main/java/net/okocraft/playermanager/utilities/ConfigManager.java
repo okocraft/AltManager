@@ -53,6 +53,9 @@ public class ConfigManager {
     /** Interval of inventory backup. */
     @Getter private int invBackupInterval;
 
+    /** How many alt accounts allowed. */
+    @Getter private int maxAccounts;
+
     /** Message on permission denied. */
     @Getter private String noPermMsg;
 
@@ -95,8 +98,11 @@ public class ConfigManager {
     /** Message on speficying invalid backup file */
     @Getter private String invalidBackupFileMsg;
 
-    /** Message on join player who renamed before. */
+    /** Message on joining player who renamed before. */
     @Getter private String notifyPreviousNameMsg;
+
+    /** Message on joining player owning alt account. */
+    @Getter private String showAltsOnJoinMsg;
 
     public ConfigManager() {
 
@@ -139,6 +145,7 @@ public class ConfigManager {
         notifyPreviousNameEnabled = defaultConfig.getBoolean("NotifyPreviousNameOnJoin", false);
         notifyPreviousNameTerm = defaultConfig.getInt("NotifyPreviousNameTerm", 14);
         invBackupInterval = defaultConfig.getInt("InventoryBackupInterval", 30);
+        maxAccounts = defaultConfig.getInt("MaxAccounts", 3);
 
         // Language field
         noPermMsg = getString("PermissionDenied");
@@ -156,6 +163,7 @@ public class ConfigManager {
         databaseSetValueSuccessMsg = getString("DatabaseSetValueSuccess");
         invalidBackupFileMsg = getString("InvalidBackupFile");
         notifyPreviousNameMsg = getString("BroadcastedPreviousName");
+        showAltsOnJoinMsg = getString("ShowAltsOnJoin");
     }
 
     private String getString(String path) {

@@ -5,12 +5,112 @@ description: "Execute some actions when renamed players joined."
 authors: [okocraft]
 api-version: "1.13"
 
-permissions:
-  playermanager.admin:
-    default: op
-
 commands:
   playermanager:
     description: "Command for PlayerManager"
     aliases: [pmanager, pman, pm]
-    permission: playermanager.admin
+    permission: playermanager
+permissions:
+  playermanager.*:
+    default: op
+    children:
+      playermanager: true
+  playermanager:
+    default: true
+  playermanager.inventory.*:
+    default: op
+    children:
+      playermanager.inventory: true
+      playermanager.inventory.searchbackup: true
+      playermanager.inventory.showbackup: true
+      playermanager.inventory.showbackup.other: true
+      playermanager.inventory.rollback: true
+      playermanager.inventory.backup: true
+  playermanager.inventory:
+    default: true
+  playermanager.inventory.searchbackup:
+    default: op
+  playermanager.inventory.showbackup:
+    default: true
+  playermanager.inventory.showbackup.other:
+    default: op
+  playermanager.inventory.rollback:
+    default: op
+  playermanager.inventory.backup:
+    default: op
+  playermanager.enderchest.*:
+    default: op
+    children:
+      playermanager.enderchest: true
+      playermanager.enderchest.searchbackup: true
+      playermanager.enderchest.showbackup: true
+      playermanager.enderchest.showbackup.other: true
+      playermanager.enderchest.rollback: true
+      playermanager.enderchest.backup: true
+  playermanager.enderchest:
+    default: true
+  playermanager.enderchest.searchbackup:
+    default: op
+  playermanager.enderchest.showbackup:
+    default: true
+  playermanager.enderchest.showbackup.other:
+    default: op
+  playermanager.enderchest.rollback:
+    default: op
+  playermanager.enderchest.backup:
+    default: op
+  playermanager.namechange.*:
+    default: op
+    children:
+      playermanager.namechange: true
+      playermanager.namechange.previousname: true
+  playermanager.namechange:
+    default: true
+  playermanager.namechange.previousname:
+    default: true
+  playermanager.database.*:
+    default: op
+    children:
+      playermanager.database: true
+      playermanager.database.addplayer: true
+      playermanager.database.removeplayer: true
+      playermanager.database.existplayer: true
+      playermanager.database.set: true
+      playermanager.database.get: true
+      playermanager.database.addcolumn: true
+      playermanager.database.dropcolumn: true
+      playermanager.database.getcolumnmap: true
+      playermanager.database.getplayersmap: true
+  playermanager.database:
+    default: op
+  playermanager.database.addplayer:
+    default: op
+  playermanager.database.removeplayer:
+    default: op
+  playermanager.database.existplayer:
+    default: op
+  playermanager.database.set:
+    default: op
+  playermanager.database.get:
+    default: op
+  playermanager.database.addcolumn:
+    default: op
+  playermanager.database.dropcolumn:
+    default: op
+  playermanager.database.getcolumnmap:
+    default: op
+  playermanager.database.getplayersmap:
+    default: op
+  playermanager.alt.*:
+    default: op
+    childres:
+      playermanager.alt: op
+      playermanager.alt.search: op
+      playermanager.alt.getip: op
+  playermanager.alt:
+    default: true
+  playermanager.alt.search:
+    default: true
+  playermanager.alt.getip:
+    default: op
+  

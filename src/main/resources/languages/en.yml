@@ -4,7 +4,7 @@ InvalidArgument: '&cInvalid argument.'
 
 NoEnoughCommand: '&cArguments are not enough.'
 
-NameChangeNotification: '&7* &b %OLDNAME% &7got his name changed. His new name is:&b %NEWNAME%&7.'
+NameChangeNotification: '&7* &b %oldname% &7got his name changed. His new name is:&b %newname%&7.'
 
 NoPlayerFound: '&cThe player &b%player%&c is not found.'
 
@@ -14,7 +14,7 @@ PageFooter: '&f=== %page% page ==='
 
 CommandNotExist: '§cThe command %command% is not exist.'
 
-InventoryBackupSuccess: '&7* Backup of %player%''s inventory has been created successfully.'
+InventoryBackupSuccess: '&7Backup of %player%''s inventory has been created successfully.'
 
 DatabaseAddPlayerSuccess: '&7Added the record &b%uuid% &7- &b%player%&7 to database.'
 
@@ -24,4 +24,6 @@ DatabaseNoColumnFound: '&cNo column with the name found.'
 
 DatabaseSetValueSuccess: '&7The column &b%column%&7 is set to &b%value%&7 for the player &b%uuid% &7(&b%player%&7)'
 
-BroadcastedPreviousName: '&b%player%''s old name is &b%oldname%'
+BroadcastedPreviousName: '&b%player%&7''s old name is &b%oldname%'
+
+ShowAltsOnJoin: '&7alts of &b%player%: &b%alts%'

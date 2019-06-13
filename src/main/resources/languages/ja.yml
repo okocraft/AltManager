@@ -4,7 +4,7 @@ InvalidArgument: '&c引数が不正です。'
 
 NoEnoughArguments: '&c引数が足りません。'
 
-NameChangeNotification: '&7* &b%OLDNAME% &7は改名して&b %NEWNAME% &7になったようだ'
+NameChangeNotification: '&7* &b%oldname% &7は改名して&b %newname% &7になったようだ'
 
 NoPlayerFound: '&b%player%&7というプレイヤーは見つかりませんでした。'
 
@@ -24,4 +24,6 @@ DatabaseNoColumnFound: '&cその名前の列はありません。'
 
 DatabaseSetValueSuccess: '&7&b%uuid% &7(&b%player%&7)の&b%column%&7を&b%Value%&7にセットしました。'
 
-BroadcastedPreviousName: '&7* &b%player% の昔の名前は &b%oldname% &7です。'
+BroadcastedPreviousName: '&7* &b%player% &7の昔の名前は &b%oldname% &7です。'
+
+ShowAltsOnJoin: '&7* &b%player% &7のアルト: &b%alts%'

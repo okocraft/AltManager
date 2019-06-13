@@ -3,6 +3,7 @@ package net.okocraft.playermanager.command;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 
 import net.okocraft.playermanager.PlayerManager;
 import net.okocraft.playermanager.database.Database;
+import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.ConfigManager;
 import net.okocraft.playermanager.utilities.InventoryUtil;
 
@@ -25,11 +27,13 @@ public class Commands implements CommandExecutor {
     private PlayerManager instance;
     private ConfigManager configManager;
     private Database database;
+    private PlayerTable playerTable;
 
     public Commands(Plugin plugin, Database database) {
         this.instance = (PlayerManager) plugin;
         this.configManager = instance.getConfigManager();
         this.database = database;
+        this.playerTable = database.getPlayerTable();
 
         instance.getCommand("playermanager").setExecutor(this);
         instance.getCommand("playermanager").setTabCompleter(new PlayerManagerTabCompleter(database));
@@ -44,23 +48,40 @@ public class Commands implements CommandExecutor {
 
         switch (subCommand) {
         case "inventory":
-            return inventoryCommand(sender, command, label, args);
+            if (!hasPermission(sender, "playermanager." + subCommand))
+                return false;
+            return inventoryCommand(sender, command, label, args, false);
+        case "enderchest":
+            if (!hasPermission(sender, "playermanager." + subCommand))
+                return false;
+            return inventoryCommand(sender, command, label, args, true);
         case "database":
+            if (!hasPermission(sender, "playermanager." + subCommand))
+                return false;
             return databaseCommand(sender, command, label, args);
+        case "alt":
+            if (!hasPermission(sender, "playermanager." + subCommand))
+                return false;
+            return altCommand(sender, command, label, args);
         case "namechange":
+            if (!hasPermission(sender, "playermanager." + subCommand))
+                return false;
             return nameChangeCommand(sender, command, label, args);
-        default:
-            return errorOccurred(sender, configManager.getCommandNotExistMsg().replaceAll("%command%", subCommand));
         }
+        return errorOccurred(sender, configManager.getCommandNotExistMsg().replaceAll("%command%", subCommand));
     }
 
-    private boolean inventoryCommand(CommandSender sender, Command command, String label, String[] args) {
+    private boolean inventoryCommand(CommandSender sender, Command command, String label, String[] args,
+            boolean isEnderChest) {
+        String type = isEnderChest ? "enderchest" : "inventory";
         if (args.length == 1)
             return errorOccurred(sender, configManager.getNoEnoughArgMsg());
         String subInventoryCommand = args[1].toLowerCase();
 
         // /pman inventory searchbackup <player>
         if (subInventoryCommand.equals("searchbackup")) {
+            if (!hasPermission(sender, "playermanager." + type + "." + subInventoryCommand))
+                return false;
             if (args.length <= 2)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
             @SuppressWarnings("deprecation")
@@ -77,7 +98,7 @@ public class Commands implements CommandExecutor {
 
             sender.sendMessage(configManager.getPageFooter().replaceAll("%page%", page.toString()));
             InventoryUtil
-                    .searchFile(instance.getDataFolder().toPath().resolve("inventory").toFile(),
+                    .searchFile(instance.getDataFolder().toPath().resolve(type).toFile(),
                             offlinePlayer.getUniqueId().toString() + ".log")
                     .stream()
                     .map(path -> LocalDateTime.parse(path.getParent().toFile().getName(), InventoryUtil.getFormat()))
@@ -86,8 +107,11 @@ public class Commands implements CommandExecutor {
             return true;
         }
 
-        // /pman inventory showbackup <player> [year] [month] [day] [hour] [minute] [second]
+        // /pman inventory showbackup <player> [year] [month] [day] [hour] [minute]
+        // [second]
         if (subInventoryCommand.equals("showbackup")) {
+            if (!hasPermission(sender, "playermanager." + type + "." + subInventoryCommand))
+                return false;
 
             if (!(sender instanceof Player))
                 return errorOccurred(sender, configManager.getSenderMustBePlayerMsg());
@@ -100,23 +124,26 @@ public class Commands implements CommandExecutor {
             if (!offlinePlayer.hasPlayedBefore())
                 return errorOccurred(sender, configManager.getNoPlayerFoundMsg().replaceAll("%player%", args[2]));
 
-            if (!sender.hasPermission("playermanager.inventory.showbackup.other") && !sender.getName().equalsIgnoreCase(args[2]))
+            if (!sender.hasPermission("playermanager." + type + ".showbackup.other")
+                    && !sender.getName().equalsIgnoreCase(args[2]))
                 return errorOccurred(sender, configManager.getNoPermMsg());
 
             if (args.length == 3) {
-                ((Player) sender).openInventory(InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer)));
+                ((Player) sender)
+                        .openInventory(InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest)));
             }
 
             Integer year = null;
             if (args.length >= 4) {
                 year = Ints.tryParse(args[3]);
                 if (year == null) {
-                    ((Player) sender).openInventory(InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer)));
+                    ((Player) sender).openInventory(
+                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest)));
                     return true;
                 }
                 if (args.length == 4) {
-                    ((Player) sender)
-                            .openInventory(InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, year)));
+                    ((Player) sender).openInventory(
+                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year)));
                     return true;
                 }
             }
@@ -125,64 +152,64 @@ public class Commands implements CommandExecutor {
             if (args.length >= 5) {
                 month = Ints.tryParse(args[4]);
                 if (month == null) {
-                    ((Player) sender)
-                            .openInventory(InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, year)));
+                    ((Player) sender).openInventory(
+                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year)));
                     return true;
                 }
                 if (args.length == 5)
-                    ((Player) sender).openInventory(
-                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month)));
+                    ((Player) sender).openInventory(InventoryUtil
+                            .fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month)));
             }
 
             Integer day = null;
             if (args.length >= 6) {
                 day = Ints.tryParse(args[5]);
                 if (day == null) {
-                    ((Player) sender).openInventory(
-                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month)));
+                    ((Player) sender).openInventory(InventoryUtil
+                            .fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month)));
                     return true;
                 }
                 if (args.length == 6)
-                    ((Player) sender).openInventory(
-                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month, day)));
+                    ((Player) sender).openInventory(InventoryUtil
+                            .fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day)));
             }
 
             Integer hour = null;
             if (args.length >= 7) {
                 hour = Ints.tryParse(args[6]);
                 if (hour == null) {
-                    ((Player) sender).openInventory(
-                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month, day)));
+                    ((Player) sender).openInventory(InventoryUtil
+                            .fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day)));
                     return true;
                 }
                 if (args.length == 7)
-                    ((Player) sender).openInventory(
-                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month, day, hour)));
+                    ((Player) sender).openInventory(InventoryUtil
+                            .fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day, hour)));
             }
 
             Integer minute = null;
             if (args.length >= 8) {
                 minute = Ints.tryParse(args[7]);
                 if (minute == null) {
-                    ((Player) sender).openInventory(
-                            InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month, day, hour)));
+                    ((Player) sender).openInventory(InventoryUtil
+                            .fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day, hour)));
                     return true;
                 }
                 if (args.length == 8)
-                    ((Player) sender).openInventory(InventoryUtil
-                            .fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month, day, hour, minute)));
+                    ((Player) sender).openInventory(InventoryUtil.fromBase64(
+                            InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day, hour, minute)));
             }
 
             Integer second = null;
             if (args.length == 9) {
                 second = Ints.tryParse(args[8]);
                 if (second == null) {
-                    ((Player) sender).openInventory(InventoryUtil
-                            .fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month, day, hour, minute)));
+                    ((Player) sender).openInventory(InventoryUtil.fromBase64(
+                            InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day, hour, minute)));
                     return true;
                 }
-                ((Player) sender).openInventory(InventoryUtil
-                        .fromBase64(InventoryUtil.fromBackup(offlinePlayer, year, month, day, hour, minute, second)));
+                ((Player) sender).openInventory(InventoryUtil.fromBase64(
+                        InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day, hour, minute, second)));
                 return true;
             }
 
@@ -191,6 +218,8 @@ public class Commands implements CommandExecutor {
 
         // rollback player's inventory from speficied backup.
         if (subInventoryCommand.equals("rollback")) {
+            if (!hasPermission(sender, "playermanager." + type + "." + subInventoryCommand))
+                return false;
 
             if (args.length <= 6)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
@@ -208,10 +237,10 @@ public class Commands implements CommandExecutor {
 
             if (year == null || month == null || day == null || hour == null || minute == null || second == null)
                 return errorOccurred(sender, configManager.getInvalidArgMsg());
-            Optional<File> backup = InventoryUtil.getBackupFile((OfflinePlayer) player, year, month, day, hour, minute,
-                    second);
+            Optional<File> backup = InventoryUtil.getBackupFile((OfflinePlayer) player, isEnderChest, year, month, day,
+                    hour, minute, second);
             if (backup.isPresent()) {
-                InventoryUtil.restoreInventory(player, backup.get());
+                InventoryUtil.restoreInventory(player, isEnderChest, backup.get());
             } else {
                 return errorOccurred(sender, configManager.getInvalidBackupFileMsg());
             }
@@ -220,23 +249,78 @@ public class Commands implements CommandExecutor {
 
         // create backup file.
         if (subInventoryCommand.equals("backup")) {
+            if (!hasPermission(sender, "playermanager." + type + "." + subInventoryCommand))
+                return false;
             if (args.length <= 2) {
                 if (!(sender instanceof Player))
                     return errorOccurred(sender, configManager.getInvalidArgMsg());
-                InventoryUtil.backupInventory((Player) sender);
+                InventoryUtil.backupInventory((Player) sender, isEnderChest);
                 sender.sendMessage(
                         configManager.getInventoryBackupSuccessMsg().replaceAll("%player%", sender.getName()));
             } else {
                 Player player = Bukkit.getPlayer(args[2]);
                 if (player == null)
                     return errorOccurred(sender, configManager.getNoPlayerFoundMsg().replaceAll("%player%", args[2]));
-                InventoryUtil.backupInventory(player);
+                InventoryUtil.backupInventory(player, false);
                 sender.sendMessage(configManager.getInventoryBackupSuccessMsg().replaceAll("%player%", args[2]));
             }
             return true;
         }
 
         return errorOccurred(sender, configManager.getInvalidArgMsg());
+    }
+
+    private boolean altCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length == 1) {
+            return errorOccurred(sender, configManager.getNoEnoughArgMsg());
+        }
+
+        final String subNameChangeCommand = args[1].toLowerCase();
+
+        if (subNameChangeCommand.equals("getip")) {
+            if (!hasPermission(sender, "playermanager.alt." + subNameChangeCommand))
+                return false;
+            if (args.length == 2) {
+                return errorOccurred(sender, configManager.getNoEnoughArgMsg());
+            }
+            if (!playerTable.existPlayer(args[2])) {
+                return errorOccurred(sender, configManager.getNoPlayerFoundMsg().replaceAll("%player%", args[2]));
+            }
+            String address = playerTable.getPlayerData("address", args[2]);
+            sender.sendMessage(address);
+            return true;
+        }
+
+        if (subNameChangeCommand.equals("search")) {
+            if (!hasPermission(sender, "playermanager.alt." + subNameChangeCommand))
+                return false;
+            if (args.length == 2) {
+                return errorOccurred(sender, configManager.getNoEnoughArgMsg());
+            }
+            if (!playerTable.existPlayer(args[2])) {
+                return errorOccurred(sender, configManager.getNoPlayerFoundMsg().replaceAll("%player%", args[2]));
+            }
+            String address = playerTable.getPlayerData("address", args[2]);
+
+            List<String> alts = database.get(playerTable.getPlayerTableName(), "player", "address", address);
+
+            if (alts.size() == 1) {
+                sender.sendMessage(
+                        configManager.getShowAltsOnJoinMsg().replaceAll("%player%", args[2]).replaceAll("%alts%", ""));
+                return true;
+            }
+
+            StringBuilder sb = new StringBuilder();
+            alts.forEach(playerName -> {
+                if (!playerName.equals(args[2]))
+                    sb.append(playerName + ", ");
+            });
+            sender.sendMessage(configManager.getShowAltsOnJoinMsg().replaceAll("%player%", args[2]).replaceAll("%alts%",
+                    sb.substring(0, sb.length() - 2).toString()));
+            return true;
+        }
+
+        return true;
     }
 
     private boolean nameChangeCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -246,18 +330,18 @@ public class Commands implements CommandExecutor {
 
         final String subNameChangeCommand = args[1].toLowerCase();
         if (subNameChangeCommand.equals("previousname")) {
-            if (args.length == 1) {
+            if (!hasPermission(sender, "playermanager.namechange." + subNameChangeCommand))
+                return false;
+            if (args.length == 2) {
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
             }
-            if (!database.existPlayer(args[2])) {
+            if (!playerTable.existPlayer(args[2])) {
                 return errorOccurred(sender, configManager.getNoPlayerFoundMsg().replaceAll("%player%", args[2]));
             }
-            String previousName = database.get("previous", args[2]);
-            if (previousName.equals("null")) {
-                sender.sendMessage("");
-            } else {
-                sender.sendMessage(previousName);
-            }
+            String previousName = playerTable.getPlayerData("previous", args[2]);
+            if (previousName.equals("")) previousName = args[2];
+            sender.sendMessage(previousName);
+            return true;
         }
 
         return true;
@@ -268,12 +352,26 @@ public class Commands implements CommandExecutor {
             return errorOccurred(sender, configManager.getNoEnoughArgMsg());
 
         final String subDatabaseCommand = args[1].toLowerCase();
+        if (subDatabaseCommand.equalsIgnoreCase("gettablemap")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
+            sender.sendMessage("テーブルリスト");
+            database.getTableMap().forEach((tableName, tableType) -> {
+                sender.sendMessage(tableName + " - " + tableType);
+                sender.sendMessage(database.getPrimaryKeyColumnName(tableName));
+            });
+            return true;
+        }
         if (subDatabaseCommand.equalsIgnoreCase("resetconnection")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             database.resetConnection();
             sender.sendMessage("§eデータベースへの接続をリセットしました。");
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("addplayer")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             if (args.length == 2)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
 
@@ -284,47 +382,52 @@ public class Commands implements CommandExecutor {
 
             String uuid = player.getUniqueId().toString();
             String name = player.getName();
-            database.addPlayer(uuid, name, true);
+            playerTable.addPlayer(uuid, name, true);
             sender.sendMessage(configManager.getDatabaseAddPlayerSuccessMsg().replaceAll("%uuid%", uuid)
                     .replaceAll("%player%", name));
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("removeplayer")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             if (args.length == 2)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
 
-            if (!database.existPlayer(args[2]))
+            if (!playerTable.existPlayer(args[2]))
                 return errorOccurred(sender, configManager.getNoPlayerFoundMsg().replaceAll("%player%", args[2]));
+            String uuid = playerTable.getPlayerData("uuid", args[2]);
+            String name = playerTable.getPlayerData("player", args[2]);
 
-            String uuid = database.get("uuid", args[2]);
-            String name = database.get("player", args[2]);
-
-            database.removePlayer(args[2]);
+            playerTable.removePlayer(args[2]);
             sender.sendMessage(configManager.getDatabaseRemovePlayerSuccessMsg().replaceAll("%uuid%", uuid)
                     .replaceAll("%player%", name));
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("existplayer")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             if (args.length == 2)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
 
-            sender.sendMessage(String.valueOf(database.existPlayer(args[2])));
+            sender.sendMessage(String.valueOf(playerTable.existPlayer(args[2])));
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("set")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             if (args.length < 5)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
 
-            if (!database.existPlayer(args[3]))
+            if (!playerTable.existPlayer(args[3]))
                 return errorOccurred(sender, configManager.getNoPlayerFoundMsg().replaceAll("%player%", args[3]));
 
-            String uuid = database.get("uuid", args[3]);
-            String name = database.get("player", args[3]);
+            String uuid = playerTable.getPlayerData("uuid", args[3]);
+            String name = playerTable.getPlayerData("player", args[3]);
 
-            if (!database.getColumnMap().containsKey(args[2]))
+            if (!database.getColumnMap(playerTable.getPlayerTableName()).containsKey(args[2]))
                 return errorOccurred(sender, configManager.getDatabaseNoColumnFoundMsg());
 
-            database.set(args[2], args[3], args[4]);
+            playerTable.setPlayerData(args[2], args[3], args[4]);
 
             sender.sendMessage(configManager.getDatabaseSetValueSuccessMsg().replaceAll("%uuid%", uuid)
                     .replaceAll("%player%", name).replaceAll("%column%", args[2]).replaceAll("%Value%", args[4]));
@@ -332,37 +435,47 @@ public class Commands implements CommandExecutor {
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("get")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             if (args.length < 4)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
 
-            sender.sendMessage(database.get(args[2], args[3]));
+            sender.sendMessage(playerTable.getPlayerData(args[2], args[3]));
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("addcolumn")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             if (args.length < 5)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
 
             if (args[4].equalsIgnoreCase("null"))
-                database.addColumn(args[2], args[3], null, true);
+                database.addColumn(playerTable.getPlayerTableName(), args[2], args[3], null, true);
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("dropcolumn")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             if (args.length == 2)
                 return errorOccurred(sender, configManager.getNoEnoughArgMsg());
 
-            database.dropColumn(args[2]);
+            database.dropColumn(playerTable.getPlayerTableName(), args[2]);
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("getcolumnmap")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             sender.sendMessage("列リスト");
-            database.getColumnMap().forEach((columnName, columnType) -> {
+            database.getColumnMap(playerTable.getPlayerTableName()).forEach((columnName, columnType) -> {
                 sender.sendMessage(columnName + " - " + columnType);
             });
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("getplayersmap")) {
+            if (!hasPermission(sender, "playermanager.database." + subDatabaseCommand))
+                return false;
             sender.sendMessage("記録されているプレイヤー");
-            database.getPlayersMap().forEach((uuidStr, name) -> {
+            playerTable.getPlayersMap().forEach((uuidStr, name) -> {
                 sender.sendMessage(uuidStr + " - " + name);
             });
             return true;

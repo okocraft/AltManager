@@ -54,7 +54,7 @@ public class InventoryUtil {
      * @param inventory to serialize
      * @return Base64 string of the provided inventory
      */
-    public static String toBase64(PlayerInventory inventory) {
+    public static String toBase64(Inventory inventory) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);) {
 
@@ -89,7 +89,7 @@ public class InventoryUtil {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
                 BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);) {
             int originalInventorySize = dataInput.readInt();
-            int inventorySize = ((originalInventorySize / 9) + 1) * 9;
+            int inventorySize = originalInventorySize % 9 == 0 ? originalInventorySize : ((originalInventorySize / 9) + 1) * 9;
             Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Inventory Backup");
 
             // Read the serialized inventory
@@ -99,22 +99,25 @@ public class InventoryUtil {
             return inventory;
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
-            return Bukkit.getServer().createInventory(null, 45, "Inventory Backup");
+            return Bukkit.getServer().createInventory(null, 54, "Inventory Backup");
         }
     }
 
     /**
      * Backup inventory of the {@code player} in
-     * /basedir/inventory/year/month/day/player-uuid.log
+     * /basedir/(inventory|enderchest)/year/month/day/player-uuid.log
      * 
      * @param player
+     * @param isEnderChest
      */
-    public static void backupInventory(Player player) {
+    public static void backupInventory(Player player, boolean isEnderChest) {
         LocalDateTime time = LocalDateTime.now(ZoneId.systemDefault());
 
         String timeFormat = time.format(format);
 
-        Path filePath = dataFolder.toPath().resolve("inventory").resolve(timeFormat)
+        String type = isEnderChest ? "enderchest" : "inventory";
+
+        Path filePath = dataFolder.toPath().resolve(type).resolve(timeFormat)
                 .resolve(player.getUniqueId().toString() + ".log");
         File logFile = filePath.toFile();
 
@@ -125,9 +128,9 @@ public class InventoryUtil {
             } else if (logFile.isDirectory()) {
                 logFile.createNewFile();
             }
-
+            Inventory inv = isEnderChest ? player.getEnderChest() : player.getInventory();
             FileWriter fw = new FileWriter(logFile, true);
-            fw.append(toBase64(player.getInventory()));
+            fw.append(toBase64(inv));
             fw.close();
         } catch (IOException exception) {
             exception.printStackTrace();
@@ -135,9 +138,9 @@ public class InventoryUtil {
         }
     }
 
-    public static String fromBackup(OfflinePlayer player, int year, int month, int day, int hour, int minute,
-            int second) {
-        Optional<File> backupFile = getBackupFile(player, year, month, day, hour, minute, second);
+    public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour,
+            int minute, int second) {
+        Optional<File> backupFile = getBackupFile(player, isEnderChest, year, month, day, hour, minute, second);
         if (backupFile.isPresent()) {
             return fromBackup(backupFile.get().toPath());
         } else {
@@ -145,8 +148,10 @@ public class InventoryUtil {
         }
     }
 
-    public static String fromBackup(OfflinePlayer player, int year, int month, int day, int hour, int minute) {
-        Path invFolderPath = dataFolder.toPath().resolve("inventory");
+    public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour,
+            int minute) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
                 .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
@@ -159,8 +164,10 @@ public class InventoryUtil {
         return fromBackup(recentBackupPath);
     }
 
-    public static String fromBackup(OfflinePlayer player, int year, int month, int day, int hour) {
-        Path invFolderPath = dataFolder.toPath().resolve("inventory");
+    public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day,
+            int hour) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
                 .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
@@ -173,8 +180,9 @@ public class InventoryUtil {
         return fromBackup(recentBackupPath);
     }
 
-    public static String fromBackup(OfflinePlayer player, int year, int month, int day) {
-        Path invFolderPath = dataFolder.toPath().resolve("inventory");
+    public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
                 .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
@@ -186,8 +194,9 @@ public class InventoryUtil {
         return fromBackup(recentBackupPath);
     }
 
-    public static String fromBackup(OfflinePlayer player, int year, int month) {
-        Path invFolderPath = dataFolder.toPath().resolve("inventory");
+    public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
                 .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
@@ -199,8 +208,9 @@ public class InventoryUtil {
         return fromBackup(recentBackupPath);
     }
 
-    public static String fromBackup(OfflinePlayer player, int year) {
-        Path invFolderPath = dataFolder.toPath().resolve("inventory");
+    public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
                 .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
@@ -211,8 +221,9 @@ public class InventoryUtil {
         return fromBackup(recentBackupPath);
     }
 
-    public static String fromBackup(OfflinePlayer player) {
-        Path invFolderPath = dataFolder.toPath().resolve("inventory");
+    public static String fromBackup(OfflinePlayer player, boolean isEnderChest) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
                 .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
@@ -245,26 +256,35 @@ public class InventoryUtil {
         return sb.toString();
     }
 
-    public static void restoreInventory(Player player, File backupFile) {
-        PlayerInventory playerInv = player.getInventory();
+    public static void restoreInventory(Player player, boolean isEnderChest, File backupFile) {
         Inventory backupInv = fromBase64(fromBackup(backupFile.toPath()));
-        for (int i = 0; i <= 40; i++) {
-            playerInv.setItem(i, backupInv.getItem(i));
+        if (isEnderChest) {
+            PlayerInventory playerInv = player.getInventory();
+            for (int i = 0; i <= 40; i++) {
+                playerInv.setItem(i, backupInv.getItem(i));
+            }
+        } else {
+            Inventory playerEnderChest = player.getEnderChest();
+            for (int i = 0; i <= 26; i++) {
+                playerEnderChest.setItem(i, backupInv.getItem(i));
+            }
         }
     }
 
-    public static Optional<File> getBackupFile(OfflinePlayer player, int year, int month, int day, int hour, int minute,
-            int second) {
+    public static Optional<File> getBackupFile(OfflinePlayer player, boolean isEnderChest, int year, int month, int day,
+            int hour, int minute, int second) {
         String specifiedTime = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day) + "_"
                 + String.format("%02d", hour) + ":" + String.format("%02d", minute) + ":"
                 + String.format("%02d", second);
-        return searchFile(dataFolder.toPath().resolve("inventory").toFile(), player.getUniqueId().toString() + ".log")
-                .stream().filter(path -> path.getParent().toFile().getName().equals(specifiedTime)).map(Path::toFile)
+        String type = isEnderChest ? "enderchest" : "inventory";
+        return searchFile(dataFolder.toPath().resolve(type).toFile(), player.getUniqueId().toString() + ".log").stream()
+                .filter(path -> path.getParent().toFile().getName().equals(specifiedTime)).map(Path::toFile)
                 .findFirst();
     }
 
-    public static void packDayBackups() {
-        Path invBackupFolderPath = dataFolder.toPath().resolve("inventory");
+    public static void packDayBackups(boolean isEnderChest) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invBackupFolderPath = dataFolder.toPath().resolve(type);
         LocalDateTime today = LocalDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);
         Arrays.asList(invBackupFolderPath.toFile().list()).stream()
                 .filter(fileName -> fileName.matches("^\\d{4}(-\\d{2}){2}_.*$"))
@@ -282,8 +302,9 @@ public class InventoryUtil {
                 });
     }
 
-    public static void packMonthBackups() {
-        Path invBackupFolderPath = dataFolder.toPath().resolve("inventory");
+    public static void packMonthBackups(boolean isEnderChest) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invBackupFolderPath = dataFolder.toPath().resolve(type);
         DateTimeFormatter monthFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd");
         LocalDate thisMonth = LocalDate.now(ZoneId.systemDefault()).withDayOfMonth(1);
         Arrays.asList(invBackupFolderPath.toFile().list()).stream()
@@ -302,8 +323,9 @@ public class InventoryUtil {
                 });
     }
 
-    public static void packYearBackups() {
-        Path invBackupFolderPath = dataFolder.toPath().resolve("inventory");
+    public static void packYearBackups(boolean isEnderChest) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        Path invBackupFolderPath = dataFolder.toPath().resolve(type);
         int thisYear = Year.now(ZoneId.systemDefault()).getValue();
         Arrays.asList(invBackupFolderPath.toFile().list()).stream()
                 .filter(fileName -> fileName.matches("^\\d{4}-\\d{2}$"))
@@ -339,35 +361,36 @@ public class InventoryUtil {
         return result;
     }
 
-    public static List<String> getBackupYears(OfflinePlayer player) {
-        return searchFile(dataFolder.toPath().resolve("inventory").toFile(), player.getUniqueId().toString() + ".log")
+    public static List<String> getBackupYears(OfflinePlayer player, boolean isEnderChest) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        return searchFile(dataFolder.toPath().resolve(type).toFile(), player.getUniqueId().toString() + ".log")
                 .parallelStream().map(path -> path.getParent().toFile().getName())
                 .map(fileName -> fileName.substring(0, 4)).filter(first4 -> first4.matches("\\d\\d\\d\\d")).distinct()
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getBackupMonth(OfflinePlayer player, int year) {
-        return searchFile(dataFolder.toPath().resolve("inventory").toFile(), player.getUniqueId().toString() + ".log")
+    public static List<String> getBackupMonth(OfflinePlayer player, boolean isEnderChest, int year) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        return searchFile(dataFolder.toPath().resolve(type).toFile(), player.getUniqueId().toString() + ".log")
                 .parallelStream().map(path -> path.getParent().toFile().getName())
                 .filter(fileName -> fileName.substring(0, 4).equals(String.valueOf(year)))
                 .map(fileName -> fileName.substring(5, 7)).filter(first2 -> first2.matches("\\d\\d")).distinct()
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getBackupDay(OfflinePlayer player, int year, int month) {
-        return searchFile(dataFolder.toPath().resolve("inventory").toFile(), player.getUniqueId().toString() + ".log")
-                .stream().map(path -> path.getParent().toFile().getName()).peek(test -> System.out.println(test))
+    public static List<String> getBackupDay(OfflinePlayer player, boolean isEnderChest, int year, int month) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        return searchFile(dataFolder.toPath().resolve(type).toFile(), player.getUniqueId().toString() + ".log")
+                .stream().map(path -> path.getParent().toFile().getName())
                 .filter(fileName -> fileName.substring(0, 4).equals(String.valueOf(year)))
-                .peek(test -> System.out.println(test))
-                .peek(test -> System.out.println(test.substring(5, 7) + " " + month))
                 .filter(fileName -> fileName.substring(5, 7).equals(String.format("%02d", month)))
-                .peek(test -> System.out.println(test)).map(fileName -> fileName.substring(8, 10))
-                .filter(first2 -> first2.matches("\\d\\d")).distinct().peek(test -> System.out.println(test))
+                .map(fileName -> fileName.substring(8, 10)).filter(first2 -> first2.matches("\\d\\d")).distinct()
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getBackupHour(OfflinePlayer player, int year, int month, int day) {
-        return searchFile(dataFolder.toPath().resolve("inventory").toFile(), player.getUniqueId().toString() + ".log")
+    public static List<String> getBackupHour(OfflinePlayer player, boolean isEnderChest, int year, int month, int day) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        return searchFile(dataFolder.toPath().resolve(type).toFile(), player.getUniqueId().toString() + ".log")
                 .parallelStream().map(path -> path.getParent().toFile().getName())
                 .filter(fileName -> fileName.substring(0, 4).equals(String.valueOf(year)))
                 .filter(fileName -> fileName.substring(5, 7).equals(String.format("%02d", month)))
@@ -376,8 +399,9 @@ public class InventoryUtil {
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getBackupMinute(OfflinePlayer player, int year, int month, int day, int hour) {
-        return searchFile(dataFolder.toPath().resolve("inventory").toFile(), player.getUniqueId().toString() + ".log")
+    public static List<String> getBackupMinute(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour) {
+        String type = isEnderChest ? "enderchest" : "inventory";
+        return searchFile(dataFolder.toPath().resolve(type).toFile(), player.getUniqueId().toString() + ".log")
                 .parallelStream().map(path -> path.getParent().toFile().getName())
                 .filter(fileName -> fileName.substring(0, 4).equals(String.valueOf(year)))
                 .filter(fileName -> fileName.substring(5, 7).equals(String.format("%02d", month)))
@@ -387,9 +411,10 @@ public class InventoryUtil {
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getBackupSecond(OfflinePlayer player, int year, int month, int day, int hour,
+    public static List<String> getBackupSecond(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour,
             int minute) {
-        return searchFile(dataFolder.toPath().resolve("inventory").toFile(), player.getUniqueId().toString() + ".log")
+        String type = isEnderChest ? "enderchest" : "inventory";
+        return searchFile(dataFolder.toPath().resolve(type).toFile(), player.getUniqueId().toString() + ".log")
                 .parallelStream().map(path -> path.getParent().toFile().getName())
                 .filter(fileName -> fileName.substring(0, 4).equals(String.valueOf(year)))
                 .filter(fileName -> fileName.substring(5, 7).equals(String.format("%02d", month)))

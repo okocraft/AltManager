@@ -14,11 +14,11 @@ NotifyPreviousNameOnJoin: true
 NofifyPreviousNameTerm: 14
 
 #If this option is true, console command written here will be executed.
-#%OLDNAME% will be replaced to the name before changed.
-#%NEWNAME% will be new name.
+#%oldname% will be replaced to the name before changed.
+#%newname% will be new name.
 ExecuteCommandOnNameChange: true
 Commands:
-- 'broadcast &7* &b%OLDNAME% &7has changed its name. New one is: &b%NEWNAME%'
+- 'broadcast &7* &b%oldname% &7has changed its name. New one is: &b%newname%'
 
 #If ScoreboardMigration is true, new player-name entry will have all old player-name entry's score on any objective.
 #For example,

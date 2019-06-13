@@ -15,16 +15,19 @@ import org.bukkit.util.StringUtil;
 
 import net.okocraft.playermanager.PlayerManager;
 import net.okocraft.playermanager.database.Database;
+import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.InventoryUtil;
 
 public class PlayerManagerTabCompleter implements TabCompleter {
 
     private PlayerManager instance;
     private Database database;
+    private PlayerTable playerTable;
 
     public PlayerManagerTabCompleter(Database database) {
         this.instance = PlayerManager.getInstance();
         this.database = database;
+        this.playerTable = database.getPlayerTable();
         this.instance.getCommand("playermanager").setTabCompleter(this);
     }
 
@@ -35,10 +38,14 @@ public class PlayerManagerTabCompleter implements TabCompleter {
         List<String> subCommands = new ArrayList<>();
         if (sender.hasPermission("playermanager.inventory"))
             subCommands.add("inventory");
+        if (sender.hasPermission("playermanager.enderchest"))
+            subCommands.add("enderchest");
         if (sender.hasPermission("playermanager.database"))
             subCommands.add("database");
         if (sender.hasPermission("playermanager.namechange"))
             subCommands.add("namechange");
+        if (sender.hasPermission("playermanager.alt"))
+            subCommands.add("alt");
 
         if (args.length == 1) {
             return StringUtil.copyPartialMatches(args[0], subCommands, resultList);
@@ -49,10 +56,15 @@ public class PlayerManagerTabCompleter implements TabCompleter {
             return resultList;
 
         switch (subCommand) {
+        case "alt":
+            return onTabCompleteAlt(sender, resultList, args);
         case "namechange":
-            return StringUtil.copyPartialMatches(args[1], new ArrayList<String>(database.getPlayersMap().values()), resultList);
+            return StringUtil.copyPartialMatches(args[1], new ArrayList<String>(playerTable.getPlayersMap().values()),
+                    resultList);
         case "inventory":
-            return onTabCompleteInventory(sender, resultList, args);
+            return onTabCompleteInventory(false, sender, resultList, args);
+        case "enderchest":
+            return onTabCompleteInventory(true, sender, resultList, args);
         case "database":
             return onTabCompleteDatabase(sender, resultList, args);
         default:
@@ -60,17 +72,50 @@ public class PlayerManagerTabCompleter implements TabCompleter {
         }
     }
 
-    private List<String> onTabCompleteInventory(CommandSender sender, List<String> resultList, String[] args) {
+    private List<String> onTabCompleteAlt(CommandSender sender, List<String> resultList, String[] args) {
+
+        List<String> altSubCommands = new ArrayList<>();
+
+        if (sender.hasPermission("playermanager.alt.getip"))
+            altSubCommands.add("getip");
+        if (sender.hasPermission("playermanager.alt.search"))
+            altSubCommands.add("search");
+
+        if (args.length == 2) {
+            return StringUtil.copyPartialMatches(args[1], altSubCommands, resultList);
+        }
+
+        final String altSubCommand = args[1].toLowerCase();
+        if (!altSubCommands.contains(altSubCommand)) {
+            return resultList;
+        }
+
+        List<String> playerList = new ArrayList<>(playerTable.getPlayersMap().values());
+
+        if (args.length == 3) {
+            switch (altSubCommand) {
+            case "getip":
+            case "search":
+                return StringUtil.copyPartialMatches(args[2], playerList, resultList);
+            }
+        }
+
+        return null;
+    }
+
+    private List<String> onTabCompleteInventory(boolean isEnderChest, CommandSender sender, List<String> resultList,
+            String[] args) {
+        String type = isEnderChest ? "enderchest" : "inventory";
 
         List<String> inventorySubCommands = new ArrayList<>();
 
-        if (sender.hasPermission("playermanager.inventory.showbackup"))
+        if (sender.hasPermission("playermanager." + type + ".showbackup"))
             inventorySubCommands.add("showbackup");
-        if (sender.hasPermission("playermanager.inventory.searchbackup"))
+        if (sender.hasPermission("playermanager." + type + ".searchbackup"))
             inventorySubCommands.add("searchbackup");
-        if (sender.hasPermission("playermanager.inventory.backup"))
+        if (sender.hasPermission("playermanager." + type + ".backup"))
             inventorySubCommands.add("backup");
-        if (sender.hasPermission("playermanager.inventory.rollback"))
+        if (sender.hasPermission("playermanager." + type + ".rollback"))
             inventorySubCommands.add("rollback");
 
         if (args.length == 2) {
@@ -81,18 +126,20 @@ public class PlayerManagerTabCompleter implements TabCompleter {
         if (!inventorySubCommands.contains(inventorySubCommand))
             return resultList;
 
-        List<String> playerList = new ArrayList<String>(database.getPlayersMap().values());
+        List<String> playerList = new ArrayList<String>(playerTable.getPlayersMap().values());
 
         if (args.length == 3) {
             switch (inventorySubCommand) {
             case "showbackup":
-                return StringUtil.copyPartialMatches(args[2], playerList, resultList);
+                if (sender.hasPermission("playermanager.inventory.showbackup.other"))
+                    return StringUtil.copyPartialMatches(args[2], playerList, resultList);
+                else
+                    return StringUtil.copyPartialMatches(args[2], Arrays.asList(sender.getName()), resultList);
             case "searchbackup":
+            case "rollback":
                 return StringUtil.copyPartialMatches(args[2], playerList, resultList);
             case "backup":
                 return null;
-            case "rollback":
-                return StringUtil.copyPartialMatches(args[2], playerList, resultList);
             default:
                 return resultList;
             }
@@ -103,14 +150,13 @@ public class PlayerManagerTabCompleter implements TabCompleter {
 
         @SuppressWarnings("deprecation")
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(args[2]);
-        List<String> years = InventoryUtil.getBackupYears(offlinePlayer);
+        List<String> years = InventoryUtil.getBackupYears(offlinePlayer, isEnderChest);
 
         if (args.length == 4) {
             switch (inventorySubCommand) {
             case "searchbackup":
                 int maxpage = (InventoryUtil
-                        .searchFile(instance.getDataFolder().toPath().resolve("inventory").toFile(), args[2]).size()
-                        / 9) + 1;
+                        .searchFile(instance.getDataFolder().toPath().resolve(type).toFile(), args[2]).size() / 9) + 1;
                 return StringUtil.copyPartialMatches(args[3],
                         IntStream.rangeClosed(1, maxpage).boxed().map(String::valueOf).collect(Collectors.toList()),
                         resultList);
@@ -126,7 +172,7 @@ public class PlayerManagerTabCompleter implements TabCompleter {
             return resultList;
 
         int year = Integer.parseInt(args[3]);
-        List<String> months = InventoryUtil.getBackupMonth(offlinePlayer, year);
+        List<String> months = InventoryUtil.getBackupMonth(offlinePlayer, isEnderChest, year);
 
         if (args.length == 5) {
             switch (inventorySubCommand) {
@@ -142,8 +188,7 @@ public class PlayerManagerTabCompleter implements TabCompleter {
             return resultList;
 
         int month = Integer.parseInt(args[4]);
-        List<String> days = InventoryUtil.getBackupDay(offlinePlayer, year, month);
-        if (days.isEmpty()) System.out.println("days is empty");
+        List<String> days = InventoryUtil.getBackupDay(offlinePlayer, isEnderChest, year, month);
 
         if (args.length == 6) {
             switch (inventorySubCommand) {
@@ -157,9 +202,9 @@ public class PlayerManagerTabCompleter implements TabCompleter {
 
         if (!days.contains(args[5]))
             return resultList;
-        
+
         int day = Integer.parseInt(args[5]);
-        List<String> hours = InventoryUtil.getBackupHour(offlinePlayer, year, month, day);
+        List<String> hours = InventoryUtil.getBackupHour(offlinePlayer, isEnderChest, year, month, day);
 
         if (args.length == 7) {
             switch (inventorySubCommand) {
@@ -175,7 +220,7 @@ public class PlayerManagerTabCompleter implements TabCompleter {
             return resultList;
 
         int hour = Integer.parseInt(args[6]);
-        List<String> minutes = InventoryUtil.getBackupMinute(offlinePlayer, year, month, day, hour);
+        List<String> minutes = InventoryUtil.getBackupMinute(offlinePlayer, isEnderChest, year, month, day, hour);
 
         if (args.length == 8) {
             switch (inventorySubCommand) {
@@ -191,7 +236,8 @@ public class PlayerManagerTabCompleter implements TabCompleter {
             return resultList;
 
         int minute = Integer.parseInt(args[7]);
-        List<String> seconds = InventoryUtil.getBackupSecond(offlinePlayer, year, month, day, hour, minute);
+        List<String> seconds = InventoryUtil.getBackupSecond(offlinePlayer, isEnderChest, year, month, day, hour,
+                minute);
 
         if (args.length == 9) {
             switch (inventorySubCommand) {
@@ -208,7 +254,7 @@ public class PlayerManagerTabCompleter implements TabCompleter {
 
     private List<String> onTabCompleteDatabase(CommandSender sender, List<String> resultList, String[] args) {
 
-        List<String> playerList = database.getPlayersMap().values().parallelStream().collect(Collectors.toList());
+        List<String> playerList = playerTable.getPlayersMap().values().parallelStream().collect(Collectors.toList());
         List<String> databaseSubCommands = Arrays.asList("addplayer", "removeplayer", "existplayer", "set", "get",
                 "addcolumn", "dropcolumn", "getcolumnmap", "getplayersmap", "resetconnection");
 
@@ -219,7 +265,7 @@ public class PlayerManagerTabCompleter implements TabCompleter {
         if (!databaseSubCommands.contains(args[1].toLowerCase()))
             return resultList;
 
-        List<String> columnList = new ArrayList<>(database.getColumnMap().keySet());
+        List<String> columnList = new ArrayList<>(database.getColumnMap(playerTable.getPlayerTableName()).keySet());
         if (args.length == 3) {
             switch (args[1].toLowerCase()) {
             case "addplayer":
