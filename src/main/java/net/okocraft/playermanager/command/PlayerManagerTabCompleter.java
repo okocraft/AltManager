@@ -59,8 +59,7 @@ public class PlayerManagerTabCompleter implements TabCompleter {
         case "alt":
             return onTabCompleteAlt(sender, resultList, args);
         case "namechange":
-            return StringUtil.copyPartialMatches(args[1], new ArrayList<String>(playerTable.getPlayersMap().values()),
-                    resultList);
+            return onTabCompleteNameChange(sender, resultList, args);
         case "inventory":
             return onTabCompleteInventory(false, sender, resultList, args);
         case "enderchest":
@@ -72,14 +71,64 @@ public class PlayerManagerTabCompleter implements TabCompleter {
         }
     }
 
+    private List<String> onTabCompleteNameChange(CommandSender sender, List<String> resultList, String[] args) {
+        
+        List<String> nameChangeSubCommands = new ArrayList<>();
+
+        if (sender.hasPermission("playermanager.namechange.previousname")) {
+            nameChangeSubCommands.add("previousname");
+            nameChangeSubCommands.add("previous");
+        }
+
+        if (args.length == 2) {
+            return StringUtil.copyPartialMatches(args[1], nameChangeSubCommands, resultList);
+        }
+        
+        String nameChangeSubCommand = args[1].toLowerCase();
+        if (!nameChangeSubCommands.contains(nameChangeSubCommand)) {
+            return resultList;
+        }
+
+        if (args.length == 3) {
+            switch (nameChangeSubCommand) {
+                case "previousname":
+                case "previous":
+                    return StringUtil.copyPartialMatches(args[2], new ArrayList<>(playerTable.getPlayersMap().values()), resultList);
+            }
+        }
+
+        return resultList;
+    }
+
     private List<String> onTabCompleteAlt(CommandSender sender, List<String> resultList, String[] args) {
 
         List<String> altSubCommands = new ArrayList<>();
 
-        if (sender.hasPermission("playermanager.alt.getip"))
-            altSubCommands.add("getip");
-        if (sender.hasPermission("playermanager.alt.search"))
+        if (sender.hasPermission("playermanager.alt.ip")) {
+            altSubCommands.add("ip");
+        }
+        if (sender.hasPermission("playermanager.alt.search")) {
             altSubCommands.add("search");
+        }
+        if (sender.hasPermission("playermanager.alt.onlinealts")) {
+            altSubCommands.add("onlinealts");
+        }
+        if (sender.hasPermission("playermanager.alt.uniqueaccess")) {
+            altSubCommands.add("uniqueaccess");
+            altSubCommands.add("unique");
+        }
+        if (sender.hasPermission("playermanager.alt.authorizedlist")) {
+            altSubCommands.add("authorizedlist");
+            altSubCommands.add("authlist");
+        }
+        if (sender.hasPermission("playermanager.alt.authorize")) {
+            altSubCommands.add("authorize");
+            altSubCommands.add("auth");
+        }
+        if (sender.hasPermission("playermanager.alt.unauthorize")) {
+            altSubCommands.add("unauthorize");
+            altSubCommands.add("unauth");
+        }
 
         if (args.length == 2) {
             return StringUtil.copyPartialMatches(args[1], altSubCommands, resultList);
@@ -94,13 +143,38 @@ public class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 3) {
             switch (altSubCommand) {
-            case "getip":
+            case "ip":
             case "search":
+            case "authorize":
+            case "auth":
+            case "unauthorize":
+            case "unauth":
+            case "authorizedlist":
+            case "authlist":
                 return StringUtil.copyPartialMatches(args[2], playerList, resultList);
             }
         }
 
-        return null;
+        switch (altSubCommand) {
+        case "authorize":
+        case "auth":
+        case "search":
+            if (!playerList.contains(args[2])) {
+                return resultList;
+            }
+        }
+
+        if (args.length == 4) {
+            switch (altSubCommand) {
+            case "authorize":
+            case "auth":
+                return StringUtil.copyPartialMatches(args[3], playerList, resultList);
+            case "search":
+                return StringUtil.copyPartialMatches(args[3], Arrays.asList("true", "false"), resultList);
+            }
+        }
+
+        return resultList;
     }
 
     private List<String> onTabCompleteInventory(boolean isEnderChest, CommandSender sender, List<String> resultList,

@@ -1,10 +1,9 @@
 package net.okocraft.playermanager.listener;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
@@ -50,16 +49,15 @@ public class PlayerJoin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
-        String address = player.getAddress().getAddress().getHostName();
+        String address = player.getAddress().getAddress().getHostAddress();
         String Uuid = player.getUniqueId().toString();
         String joinedPlayerName = player.getName();
         String beforePlayerName = playerTable.getPlayerData("player", Uuid);
-        String oldAddress = playerTable.getPlayerData("address", Uuid);
 
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
 
         if (!playerTable.existPlayer(Uuid)) {
-            database.insert(playerTable.getPlayerTableName(), new HashMap<String, String>(){
+            database.insert(playerTable.getPlayerTableName(), new HashMap<String, String>() {
                 private static final long serialVersionUID = 1L;
                 {
                     put("uuid", Uuid);
@@ -71,6 +69,7 @@ public class PlayerJoin implements Listener {
             onNameChanged(player, joinedPlayerName, beforePlayerName);
         }
 
+        String oldAddress = playerTable.getPlayerData("address", Uuid);
         if (!oldAddress.equals(address))
             database.set(playerTable.getPlayerTableName(), "address", address, "address", oldAddress);
 
@@ -132,18 +131,12 @@ public class PlayerJoin implements Listener {
 
     private void logNameChange(String uuid, String newName, String oldName) {
         try {
-            File logFile = new File(PlayerManager.getInstance().getDataFolder().getPath() + "/log.txt");
-            if (!logFile.exists())
-                logFile.createNewFile();
-            OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(logFile, true), "UTF-8");
-            BufferedWriter bw = new BufferedWriter(osw);
-
-            bw.write(uuid);
-            bw.newLine();
-            bw.write("    " + oldName + "->" + newName);
-            bw.newLine();
-
-            bw.close();
+            Path log = PlayerManager.getInstance().getDataFolder().toPath().resolve("rename.log");
+            Files.createFile(log);
+            Files.write(log,
+                    (uuid + "\n" + String.format("%-16s", oldName) + " -> " + newName + "\n")
+                            .getBytes(),
+                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         }

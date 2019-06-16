@@ -4,9 +4,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import lombok.Getter;
@@ -26,7 +29,7 @@ public class PlayerTable {
     PlayerTable(Database database) {
         log = PlayerManager.getInstance().getLog();
         this.database = database;
-        this.playerTableName = "PlayerManager_Rename";
+        this.playerTableName = "PlayerManager";
 
         boolean isTableCreated = database.createTable(playerTableName, "uuid TEXT PRIMARY KEY NOT NULL",
                 "player TEXT NOT NULL");
@@ -37,6 +40,7 @@ public class PlayerTable {
         database.addColumn(playerTableName, "previous", "TEXT", null, false);
         database.addColumn(playerTableName, "renamelogondate", "TEXT", LocalDateTime.MIN.format(InventoryUtil.getFormat()), false);
         database.addColumn(playerTableName, "address", "TEXT", null, false);
+        database.addColumn(playerTableName, "authorizedalts", "TEXT", null, false);
     }
 
     /**
@@ -153,16 +157,48 @@ public class PlayerTable {
      */
     public String getPlayerData(String column, String entry) {
 
-        if (!database.getColumnMap(playerTableName).containsKey(column))
-            return ":NO_COLUMN_NAMED_" + column + "_EXIST";
+        if (!database.getColumnMap(playerTableName).containsKey(column)) {
+            log.warning(":NO_COLUMN_NAMED_" + column + "_EXIST");
+            return "";
+        }
 
-        if (!existPlayer(entry))
-            return ":NO_RECORD_FOR_" + entry + "_EXIST";
+        if (!existPlayer(entry)) {
+            log.warning(":NO_RECORD_FOR_" + entry + "_EXIST");
+            return "";
+        }
 
-        if (Commands.checkEntryType(entry).equals("player"))
+        if (Commands.checkEntryType(entry).equals("player")) {
             entry = database.get(playerTableName, "uuid", "player", entry).stream().findFirst().orElse("");
-
+        }
         return database.get(playerTableName, column, entry);
+    }
+
+    public Set<String> getAuthorizedAlts(String entry) {
+        String authorizedaltsString = getPlayerData("authorizedalts", entry);
+        if (authorizedaltsString.equals("")) {
+            log.warning(":NO_AUTHOLIZED_ALTS");
+            return new HashSet<>();
+        }
+        return new HashSet<>(Arrays.asList(authorizedaltsString.split(", ")));
+    }
+
+    public boolean setAuthorizedAlts(String entry, Set<String> authorizedAlts) {
+        if (Commands.checkEntryType(entry).equals("player")) {
+            entry = getPlayerData("uuid", entry);
+        }
+        if (authorizedAlts.isEmpty()) {
+            database.set(playerTableName, "authorizedalts", "", entry);
+            return true;
+        }
+
+        authorizedAlts.removeIf(uuid -> !Commands.checkEntryType(uuid).equals("uuid"));
+
+        StringBuilder sb = new StringBuilder();
+        authorizedAlts.forEach(authorizedAlt -> {
+            sb.append(authorizedAlt + ", ");
+        });
+
+        return database.set(playerTableName, "authorizedalts", sb.substring(0, sb.length() - 2), entry);
     }
 
     /**

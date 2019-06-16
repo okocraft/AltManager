@@ -259,14 +259,14 @@ public class InventoryUtil {
     public static void restoreInventory(Player player, boolean isEnderChest, File backupFile) {
         Inventory backupInv = fromBase64(fromBackup(backupFile.toPath()));
         if (isEnderChest) {
-            PlayerInventory playerInv = player.getInventory();
-            for (int i = 0; i <= 40; i++) {
-                playerInv.setItem(i, backupInv.getItem(i));
-            }
-        } else {
             Inventory playerEnderChest = player.getEnderChest();
             for (int i = 0; i <= 26; i++) {
                 playerEnderChest.setItem(i, backupInv.getItem(i));
+            }
+        } else {
+            PlayerInventory playerInv = player.getInventory();
+            for (int i = 0; i <= 40; i++) {
+                playerInv.setItem(i, backupInv.getItem(i));
             }
         }
     }

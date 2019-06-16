@@ -27,3 +27,9 @@ DatabaseSetValueSuccess: '&7&b%uuid% &7(&b%player%&7)の&b%column%&7を&b%Value%
 BroadcastedPreviousName: '&7* &b%player% &7の昔の名前は &b%oldname% &7です。'
 
 ShowAltsOnJoin: '&7* &b%player% &7のアルト: &b%alts%'
+
+AltAuthorize: '&7* &b%player1%&7 と &b%player2% &7を非altアカウントとして認証しました。'
+
+AltUnauthorize: '&7* &b%player%&7 は再び同じIpの他のプレイヤーのアルトと見做されました。'
+
+NotSameIp: '&7* &b%player1%&7 と &b%player2% &7は同じIpから接続していません。'

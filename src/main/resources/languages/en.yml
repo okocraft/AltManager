@@ -27,3 +27,9 @@ DatabaseSetValueSuccess: '&7The column &b%column%&7 is set to &b%value%&7 for th
 BroadcastedPreviousName: '&b%player%&7''s old name is &b%oldname%'
 
 ShowAltsOnJoin: '&7alts of &b%player%: &b%alts%'
+
+AltAuthorize: '&b%player1%&7 and &b%player2%&7 are authorized as non alt account.'
+
+AltUnauthorize: '&b%player%&7 have been alt account again from same ip.'
+
+NotSameIp: '&b%player1%&7 and &b%player2% &7do not have same Ip'

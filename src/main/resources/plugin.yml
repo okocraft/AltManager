@@ -104,13 +104,16 @@ permissions:
   playermanager.alt.*:
     default: op
     childres:
-      playermanager.alt: op
-      playermanager.alt.search: op
-      playermanager.alt.getip: op
+      playermanager.alt: true
+      playermanager.alt.search: true
+      playermanager.alt.getip: true
+      playermanager.alt.uniqueaccess: true
   playermanager.alt:
     default: true
   playermanager.alt.search:
     default: true
   playermanager.alt.getip:
     default: op
+  playermanager.alt.uniqueaccess:
+    default: true
   

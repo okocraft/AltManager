@@ -104,6 +104,15 @@ public class ConfigManager {
     /** Message on joining player owning alt account. */
     @Getter private String showAltsOnJoinMsg;
 
+    /** Message on autholizing 2 account having same ip as non alt account. */
+    @Getter private String altAuthorizeMsg;
+
+    /** Message on autholizing 2 account having same ip as non alt account. */
+    @Getter private String altUnauthorizeMsg;
+
+    /** Message on autholizing failure because of different ip. */
+    @Getter private String playerDifferentIpMsg;
+
     public ConfigManager() {
 
         instance = PlayerManager.getInstance();
@@ -164,6 +173,9 @@ public class ConfigManager {
         invalidBackupFileMsg = getString("InvalidBackupFile");
         notifyPreviousNameMsg = getString("BroadcastedPreviousName");
         showAltsOnJoinMsg = getString("ShowAltsOnJoin");
+        altAuthorizeMsg = getString("AltAuthorize");
+        playerDifferentIpMsg = getString("NotSameIp");
+        altUnauthorizeMsg = getString("AltUnauthorize");
     }
 
     private String getString(String path) {

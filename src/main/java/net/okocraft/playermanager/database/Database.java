@@ -235,7 +235,7 @@ public class Database {
 
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
 
-        if (!primaryKeyColumnName.equals("") && (!defaultValue.containsKey(primaryKeyColumnName))) {
+        if (!primaryKeyColumnName.equals("") && !defaultValue.containsKey(primaryKeyColumnName)) {
             log.warning(":NEED_PRIMARY_KEY");
             return false;
         }
@@ -248,19 +248,15 @@ public class Database {
             sb2.append("'" + v + "'" + ", ");
         });
 
-        String preparingStatement = "INSERT OR IGNORE INTO " + table + " ("
-                + sb1.substring(0, sb1.length() - 2).toString() + ") VALUES ("
-                + sb2.substring(0, sb2.length() - 2).toString() + ")";
-        System.out.println(preparingStatement);
-
-        return prepare(preparingStatement).map(statement -> {
-            try {
-                return statement.execute();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
-            }
-        }).orElse(false);
+        return prepare("INSERT OR IGNORE INTO " + table + " (" + sb1.substring(0, sb1.length() - 2).toString()
+                + ") VALUES (" + sb2.substring(0, sb2.length() - 2).toString() + ")").map(statement -> {
+                    try {
+                        return statement.execute();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }).orElse(false);
     }
 
     /**
@@ -438,7 +434,6 @@ public class Database {
         }
 
         List<String> resultList = new ArrayList<>();
-
         val statement = prepare("SELECT " + column + " FROM " + table + " WHERE " + indexColumn + " = ?");
 
         Optional<List<String>> result = statement.map(resource -> {
@@ -730,11 +725,10 @@ public class Database {
         return connection.map(con -> {
             try {
                 ResultSet resultSet = con.getMetaData().getPrimaryKeys(con.getCatalog(), null, table);
-                String pkcolumn = "not executed.";
                 if (resultSet.next()) {
-                    pkcolumn = resultSet.getString("COLUMN_NAME");
+                    return resultSet.getString("COLUMN_NAME");
                 }
-                return pkcolumn;
+                return "";
             } catch (SQLException e) {
                 e.printStackTrace();
                 return "";
