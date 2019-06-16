@@ -3,6 +3,7 @@ package net.okocraft.playermanager.utilities;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
+import java.util.Optional;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,7 +16,8 @@ public class ConfigManager {
     /** PLugin instance */
     private static PlayerManager instance;
 
-    @Getter private FileConfiguration defaultConfig;
+    @Getter
+    private FileConfiguration defaultConfig;
 
     /** language file. ex. 'ja.yml', 'en.yml'... */
     private String languageFile;
@@ -24,94 +26,124 @@ public class ConfigManager {
     private CustomConfig languageCustomConfig;
 
     /** Language FileConfiguration */
-    @Getter private FileConfiguration languageConfig;
+    @Getter
+    private FileConfiguration languageConfig;
 
     /** Whether Name change logging is enabled. */
-    @Getter private boolean loggingEnabled;
+    @Getter
+    private boolean loggingEnabled;
 
     /** Whether Name change notification is enabled. */
-    @Getter private boolean notificationEnabled;
+    @Getter
+    private boolean notificationEnabled;
 
     /** Whether command execution is enabled. */
-    @Getter private boolean commandExecutionEnabled;
+    @Getter
+    private boolean commandExecutionEnabled;
 
     /** Command List which will be executed on Change of Name. */
-    @Getter private List<String> commandList;
+    @Getter
+    private List<String> commandList;
 
     /** Whether score migration is enabled. */
-    @Getter private boolean scoreMigrationEnabled;
+    @Getter
+    private boolean scoreMigrationEnabled;
 
     /** On score migration, whether score of old name should be reset. */
-    @Getter private boolean oldScoreResetEnabled;
+    @Getter
+    private boolean oldScoreResetEnabled;
 
     /** Should plugin notify previous name for the player on join. */
-    @Getter private boolean notifyPreviousNameEnabled;
+    @Getter
+    private boolean notifyPreviousNameEnabled;
 
-    /** How long the plugin broadcast his previous name on join. In day.*/
-    @Getter private int notifyPreviousNameTerm;
+    /** How long the plugin broadcast his previous name on join. In day. */
+    @Getter
+    private int notifyPreviousNameTerm;
 
     /** Interval of inventory backup. */
-    @Getter private int invBackupInterval;
+    @Getter
+    private int invBackupInterval;
 
     /** How many alt accounts allowed. */
-    @Getter private int maxAccounts;
+    @Getter
+    private int maxAccounts;
 
     /** Message on permission denied. */
-    @Getter private String noPermMsg;
+    @Getter
+    private String noPermMsg;
 
     /** Message on invalid argument. */
-    @Getter private String invalidArgMsg;
+    @Getter
+    private String invalidArgMsg;
 
     /** Message on specifying no enough arguments. */
-    @Getter private String noEnoughArgMsg;
+    @Getter
+    private String noEnoughArgMsg;
 
     /** Message on name change notification. */
-    @Getter private String nameChangeMsg;
-    
+    @Getter
+    private String nameChangeMsg;
+
     /** Message when no player is found. */
-    @Getter private String noPlayerFoundMsg;
+    @Getter
+    private String noPlayerFoundMsg;
 
     /** Message when sender should. */
-    @Getter private String senderMustBePlayerMsg;
+    @Getter
+    private String senderMustBePlayerMsg;
 
     /** Page footer format. */
-    @Getter private String pageFooter;
+    @Getter
+    private String pageFooter;
 
     /** Message on invalid command. */
-    @Getter private String commandNotExistMsg;
+    @Getter
+    private String commandNotExistMsg;
 
     /** Message on executed inventory backup successfully. */
-    @Getter private String inventoryBackupSuccessMsg;
-    
+    @Getter
+    private String inventoryBackupSuccessMsg;
+
     /** Message on addPlayer success. */
-    @Getter private String databaseAddPlayerSuccessMsg;
+    @Getter
+    private String databaseAddPlayerSuccessMsg;
 
     /** Message on removePlayer success. */
-    @Getter private String databaseRemovePlayerSuccessMsg;
+    @Getter
+    private String databaseRemovePlayerSuccessMsg;
 
     /** Message on no column is found. */
-    @Getter private String databaseNoColumnFoundMsg;
+    @Getter
+    private String databaseNoColumnFoundMsg;
 
     /** Message on serValue success. */
-    @Getter private String databaseSetValueSuccessMsg;
+    @Getter
+    private String databaseSetValueSuccessMsg;
 
     /** Message on speficying invalid backup file */
-    @Getter private String invalidBackupFileMsg;
+    @Getter
+    private String invalidBackupFileMsg;
 
     /** Message on joining player who renamed before. */
-    @Getter private String notifyPreviousNameMsg;
+    @Getter
+    private String notifyPreviousNameMsg;
 
     /** Message on joining player owning alt account. */
-    @Getter private String showAltsOnJoinMsg;
+    @Getter
+    private String showAltsOnJoinMsg;
 
     /** Message on autholizing 2 account having same ip as non alt account. */
-    @Getter private String altAuthorizeMsg;
+    @Getter
+    private String altAuthorizeMsg;
 
     /** Message on autholizing 2 account having same ip as non alt account. */
-    @Getter private String altUnauthorizeMsg;
+    @Getter
+    private String altUnauthorizeMsg;
 
     /** Message on autholizing failure because of different ip. */
-    @Getter private String playerDifferentIpMsg;
+    @Getter
+    private String playerDifferentIpMsg;
 
     public ConfigManager() {
 
@@ -133,7 +165,7 @@ public class ConfigManager {
         temp = null;
     }
 
-    public void reloadConfig(){
+    public void reloadConfig() {
         instance.reloadConfig();
         defaultConfig = instance.getConfig();
         languageFile = defaultConfig.getString("LanguageFile", "en.yml");
@@ -179,13 +211,15 @@ public class ConfigManager {
     }
 
     private String getString(String path) {
-        String result = languageConfig.getString(path);
-        if (result == null) {
-            if (languageFile == null) languageFile = "en.yml";
+        Optional<String> result = Optional.ofNullable(languageConfig.getString(path));
+        if (!result.isPresent()) {
+            if (languageFile == null) {
+                languageFile = "en.yml";
+            }
             Reader reader = new InputStreamReader(instance.getResource("languages/" + languageFile));
             YamlConfiguration jarConfig = YamlConfiguration.loadConfiguration(reader);
-            result = jarConfig.getString(path, "&cError has occured on loading locale.");
+            result = Optional.ofNullable(jarConfig.getString(path, "&cError has occured on loading locale."));
         }
-        return result.replaceAll("&([a-f0-9])", "§$1");
+        return result.orElse("&cError has occured on loading locale.").replaceAll("&([a-f0-9])", "§$1");
     }
 }
