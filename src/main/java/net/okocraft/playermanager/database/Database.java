@@ -534,18 +534,20 @@ public class Database {
         Statement statement = null;
 
         try {
-            statement = connection.get().createStatement();
+            if (connection.isPresent()) {
+                statement = connection.get().createStatement();
 
-            statement.addBatch("BEGIN TRANSACTION");
-            statement.addBatch("ALTER TABLE " + table + " RENAME TO temp_" + table + "");
-            statement.addBatch("CREATE TABLE " + table + " (" + columns + ")");
-            statement.addBatch("INSERT INTO " + table + " (" + columnsExcludeType + ") SELECT " + columnsExcludeType
-                    + " FROM temp_" + table + "");
-            statement.addBatch("DROP TABLE temp_" + table + "");
-            statement.addBatch("COMMIT");
+                statement.addBatch("BEGIN TRANSACTION");
+                statement.addBatch("ALTER TABLE " + table + " RENAME TO temp_" + table + "");
+                statement.addBatch("CREATE TABLE " + table + " (" + columns + ")");
+                statement.addBatch("INSERT INTO " + table + " (" + columnsExcludeType + ") SELECT " + columnsExcludeType
+                        + " FROM temp_" + table + "");
+                statement.addBatch("DROP TABLE temp_" + table + "");
+                statement.addBatch("COMMIT");
 
-            // Execute this batch
-            threadPool.submit(new StatementRunner(statement));
+                // Execute this batch
+                threadPool.submit(new StatementRunner(statement));
+            }
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
