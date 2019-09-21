@@ -2,6 +2,7 @@ package net.okocraft.playermanager.command;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -208,7 +209,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
                 if (sender.hasPermission("playermanager.inventory.showbackup.other"))
                     return StringUtil.copyPartialMatches(args[2], playerList, resultList);
                 else
-                    return StringUtil.copyPartialMatches(args[2], Arrays.asList(sender.getName()), resultList);
+                    return StringUtil.copyPartialMatches(args[2], Collections.singletonList(sender.getName()), resultList);
             case "searchbackup":
             case "rollback":
                 return StringUtil.copyPartialMatches(args[2], playerList, resultList);
@@ -352,7 +353,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
                 case "get":
                     return StringUtil.copyPartialMatches(args[2], columnList, resultList);
                 case "addcolumn":
-                return StringUtil.copyPartialMatches(args[2], Arrays.asList("<new_column_name>"), resultList);
+                return StringUtil.copyPartialMatches(args[2], Collections.singletonList("<new_column_name>"), resultList);
             }
         }
 
@@ -386,7 +387,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
         if (args.length == 5) {
             switch (args[1].toLowerCase()) {
             case "set":
-                return StringUtil.copyPartialMatches(args[4], Arrays.asList("<value>"), resultList);
+                return StringUtil.copyPartialMatches(args[4], Collections.singletonList("<value>"), resultList);
             case "addcolumn":
                 return StringUtil.copyPartialMatches(args[4], Arrays.asList("<default_value>", "null"), resultList);
             }
