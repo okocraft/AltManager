@@ -35,9 +35,6 @@ public class PlayerJoin implements Listener {
     private final PlayerTable playerTable;
     private final ConfigManager config;
 
-    private String nameChangeMsg;
-    private List<String> commands;
-
     public PlayerJoin(Plugin plugin, Database database) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.database = database;
@@ -143,12 +140,12 @@ public class PlayerJoin implements Listener {
     }
 
     private void notifyNameChange(String newName, String oldName) {
-        nameChangeMsg = config.getNameChangeMsg().replaceAll("%oldname%", oldName).replaceAll("%newname%", newName);
+        String nameChangeMsg = config.getNameChangeMsg().replaceAll("%oldname%", oldName).replaceAll("%newname%", newName);
         Bukkit.broadcastMessage(nameChangeMsg);
     }
 
     private void executeCommand(String newName, String oldName) {
-        commands = config.getCommandList();
+        List<String> commands = config.getCommandList();
 
         commands.forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replaceAll("&([a-f0-9])", "§$1")
                 .replaceAll("%oldname%", oldName).replaceAll("%newname%", newName)));
