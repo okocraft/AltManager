@@ -65,7 +65,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
         case "enderchest":
             return onTabCompleteInventory(true, sender, resultList, args);
         case "database":
-            return onTabCompleteDatabase(sender, resultList, args);
+            return onTabCompleteDatabase(resultList, args);
         default:
             return resultList;
         }
@@ -326,7 +326,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
         return resultList;
     }
 
-    private List<String> onTabCompleteDatabase(CommandSender sender, List<String> resultList, String[] args) {
+    private List<String> onTabCompleteDatabase(List<String> resultList, String[] args) {
 
         List<String> playerList = playerTable.getPlayersMap().values().parallelStream().collect(Collectors.toList());
         List<String> databaseSubCommands = Arrays.asList("addplayer", "removeplayer", "existplayer", "set", "get",

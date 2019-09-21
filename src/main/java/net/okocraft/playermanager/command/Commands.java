@@ -56,12 +56,12 @@ public class Commands implements CommandExecutor {
         case "test":
             if (!hasPermission(sender, "playermanager." + subCommand))
                 return false;
-            return test(sender, args);
+            return test(sender);
         }
         return errorOccurred(sender, configManager.getCommandNotExistMsg().replaceAll("%command%", subCommand));
     }
 
-    private static boolean test(CommandSender sender, String[] args) {
+    private static boolean test(CommandSender sender) {
         sender.sendMessage(((Player) sender).getAddress().getAddress().getHostAddress());
         return true;
     }

@@ -45,13 +45,13 @@ class AltCommands {
             if (!Commands.hasPermission(sender, "playermanager.alt.onlinealts")) {
                 return false;
             }
-            return onlineAltsCommand(sender, args);
+            return onlineAltsCommand(sender);
         case "uniqueaccess":
         case "unique":
             if (!Commands.hasPermission(sender, "playermanager.alt.uniqueaccess")) {
                 return false;
             }
-            return uniqueAccessCommand(sender, args);
+            return uniqueAccessCommand(sender);
         case "authorizedlist":
         case "authlist":
             if (!Commands.hasPermission(sender, "playermanager.alt.authorizedlist")) {
@@ -127,14 +127,14 @@ class AltCommands {
         return true;
     }
 
-    private static boolean uniqueAccessCommand(CommandSender sender, String[] args) {
+    private static boolean uniqueAccessCommand(CommandSender sender) {
         sender.sendMessage(String.valueOf(Bukkit.getOnlinePlayers().stream()
                 .map(player -> player.getAddress().getAddress().getHostAddress()).distinct().count()));
 
         return true;
     }
 
-    private static boolean onlineAltsCommand(CommandSender sender, String[] args) {
+    private static boolean onlineAltsCommand(CommandSender sender) {
         List<String> altIPs = new ArrayList<>();
         List<String> nonAltIPs = new ArrayList<>();
         Bukkit.getOnlinePlayers().stream().map(player -> player.getAddress().getAddress().getHostAddress()).forEach(ip -> {

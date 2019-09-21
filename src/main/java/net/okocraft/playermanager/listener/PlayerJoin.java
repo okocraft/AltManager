@@ -122,11 +122,11 @@ public class PlayerJoin implements Listener {
         if (config.isLoggingEnabled())
             logNameChange(uuid, newName, oldName);
         if (config.isNotificationEnabled())
-            notifyNameChange(uuid, newName, oldName);
+            notifyNameChange(newName, oldName);
         if (config.isCommandExecutionEnabled())
-            executeCommand(uuid, newName, oldName);
+            executeCommand(newName, oldName);
         if (config.isScoreMigrationEnabled())
-            migrateScores(uuid, newName, oldName);
+            migrateScores(newName, oldName);
     }
 
     private void logNameChange(String uuid, String newName, String oldName) {
@@ -142,12 +142,12 @@ public class PlayerJoin implements Listener {
         }
     }
 
-    private void notifyNameChange(String uuid, String newName, String oldName) {
+    private void notifyNameChange(String newName, String oldName) {
         nameChangeMsg = config.getNameChangeMsg().replaceAll("%oldname%", oldName).replaceAll("%newname%", newName);
         Bukkit.broadcastMessage(nameChangeMsg);
     }
 
-    private void executeCommand(String uuid, String newName, String oldName) {
+    private void executeCommand(String newName, String oldName) {
         commands = config.getCommandList();
 
         commands.forEach(command -> {
@@ -156,7 +156,7 @@ public class PlayerJoin implements Listener {
         });
     }
 
-    private void migrateScores(String uuid, String newName, String oldName) {
+    private void migrateScores(String newName, String oldName) {
         Scoreboard mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
         Set<Objective> Objectives = mainScoreboard.getObjectives();
 
