@@ -652,8 +652,8 @@ public class Database {
      *
      * @return カラムと値のマップ
      */
-    public boolean setMultiValue(String table, Map<String, String> columnValueMap, String indexKey,
-            String indexColumn) {
+    boolean setMultiValue(String table, Map<String, String> columnValueMap, String indexKey,
+                          String indexColumn) {
 
         StringBuilder sb = new StringBuilder();
         columnValueMap.forEach((columnName, columnValue) -> sb.append(columnName).append(" = '").append(columnValue).append("', "));
