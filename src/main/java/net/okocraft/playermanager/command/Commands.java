@@ -1,5 +1,6 @@
 package net.okocraft.playermanager.command;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
 import org.bukkit.command.Command;
@@ -66,7 +67,10 @@ public class Commands implements CommandExecutor {
     }
 
     private static boolean test(CommandSender sender) {
-        sender.sendMessage(((Player) sender).getAddress().getAddress().getHostAddress());
+        InetSocketAddress address = ((Player) sender).getAddress();
+        if (address != null) {
+            sender.sendMessage(address.getAddress().getHostAddress());
+        }
         return true;
     }
 
