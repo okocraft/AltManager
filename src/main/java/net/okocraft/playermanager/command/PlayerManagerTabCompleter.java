@@ -25,15 +25,15 @@ class PlayerManagerTabCompleter implements TabCompleter {
     private final Database database;
     private final PlayerTable playerTable;
 
-    public PlayerManagerTabCompleter(Database database) {
+    PlayerManagerTabCompleter(Database database) {
         this.instance = PlayerManager.getInstance();
         this.database = database;
         this.playerTable = database.getPlayerTable();
         PluginCommand command = instance.getCommand("playermanager");
-        if (command != null){
+        if (command != null) {
             command.setTabCompleter(this);
         } else {
-           instance.getLog().warning("/playermanager が null でした。タブ補完は使用できません。");
+            instance.getLog().warning("/playermanager が null でした。タブ補完は使用できません。");
         }
     }
 
