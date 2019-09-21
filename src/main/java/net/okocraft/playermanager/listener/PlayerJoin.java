@@ -150,10 +150,8 @@ public class PlayerJoin implements Listener {
     private void executeCommand(String newName, String oldName) {
         commands = config.getCommandList();
 
-        commands.forEach(command -> {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replaceAll("&([a-f0-9])", "§$1")
-                    .replaceAll("%oldname%", oldName).replaceAll("%newname%", newName));
-        });
+        commands.forEach(command -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.replaceAll("&([a-f0-9])", "§$1")
+                .replaceAll("%oldname%", oldName).replaceAll("%newname%", newName)));
     }
 
     private void migrateScores(String newName, String oldName) {

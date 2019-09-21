@@ -649,9 +649,7 @@ public class Database {
             String indexColumn) {
 
         StringBuilder sb = new StringBuilder();
-        columnValueMap.forEach((columnName, columnValue) -> {
-            sb.append(columnName).append(" = '").append(columnValue).append("', ");
-        });
+        columnValueMap.forEach((columnName, columnValue) -> sb.append(columnName).append(" = '").append(columnValue).append("', "));
 
         val statement = prepare(
                 "UPDATE " + table + " SET " + sb.substring(0, sb.length() - 2) + " WHERE " + indexColumn + " = ?");

@@ -163,9 +163,7 @@ class DatabaseCommands {
             }
 
             sender.sendMessage("列リスト");
-            database.getColumnMap(playerTable.getPlayerTableName()).forEach((columnName, columnType) -> {
-                sender.sendMessage(columnName + " - " + columnType);
-            });
+            database.getColumnMap(playerTable.getPlayerTableName()).forEach((columnName, columnType) -> sender.sendMessage(columnName + " - " + columnType));
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("getplayersmap")) {
@@ -174,9 +172,7 @@ class DatabaseCommands {
             }
 
             sender.sendMessage("記録されているプレイヤー");
-            playerTable.getPlayersMap().forEach((uuidStr, name) -> {
-                sender.sendMessage(uuidStr + " - " + name);
-            });
+            playerTable.getPlayersMap().forEach((uuidStr, name) -> sender.sendMessage(uuidStr + " - " + name));
             return true;
         }
         return Commands.errorOccurred(sender, configManager.getInvalidArgMsg());

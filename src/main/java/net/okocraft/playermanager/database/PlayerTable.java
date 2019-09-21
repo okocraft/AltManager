@@ -193,9 +193,7 @@ public class PlayerTable {
         authorizedAlts.removeIf(uuid -> !Commands.checkEntryType(uuid).equals("uuid"));
 
         StringBuilder sb = new StringBuilder();
-        authorizedAlts.forEach(authorizedAlt -> {
-            sb.append(authorizedAlt).append(", ");
-        });
+        authorizedAlts.forEach(authorizedAlt -> sb.append(authorizedAlt).append(", "));
 
         database.set(playerTableName, "authorizedalts", sb.substring(0, sb.length() - 2), entry);
     }
