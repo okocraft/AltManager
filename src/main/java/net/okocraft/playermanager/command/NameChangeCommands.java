@@ -1,11 +1,10 @@
 package net.okocraft.playermanager.command;
 
-import org.bukkit.command.CommandSender;
-
 import net.okocraft.playermanager.PlayerManager;
 import net.okocraft.playermanager.database.Database;
 import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.ConfigManager;
+import org.bukkit.command.CommandSender;
 
 class NameChangeCommands {
 
@@ -22,12 +21,12 @@ class NameChangeCommands {
         final String subNameChangeCommand = args[1].toLowerCase();
 
         switch (subNameChangeCommand) {
-        case "previousname":
-        case "previous":
-            if (!Commands.hasPermission(sender, "playermanager.namechange.previousname")) {
-                return false;
-            }
-            return previousNameCommand(sender, args);
+            case "previousname":
+            case "previous":
+                if (!Commands.hasPermission(sender, "playermanager.namechange.previousname")) {
+                    return false;
+                }
+                return previousNameCommand(sender, args);
         }
 
         return true;
