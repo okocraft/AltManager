@@ -1,5 +1,6 @@
 package net.okocraft.playermanager.utilities;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
@@ -216,9 +217,12 @@ public class ConfigManager {
             if (languageFile == null) {
                 languageFile = "en.yml";
             }
-            Reader reader = new InputStreamReader(instance.getResource("languages/" + languageFile));
-            YamlConfiguration jarConfig = YamlConfiguration.loadConfiguration(reader);
-            result = Optional.ofNullable(jarConfig.getString(path, "&cError has occured on loading locale."));
+            InputStream resource = instance.getResource("languages/" + languageFile);
+            if (resource != null) {
+                Reader reader = new InputStreamReader(resource);
+                YamlConfiguration jarConfig = YamlConfiguration.loadConfiguration(reader);
+                result = Optional.ofNullable(jarConfig.getString(path, "&cError has occured on loading locale."));
+            }
         }
         return result.orElse("&cError has occured on loading locale.").replaceAll("&([a-f0-9])", "§$1");
     }
