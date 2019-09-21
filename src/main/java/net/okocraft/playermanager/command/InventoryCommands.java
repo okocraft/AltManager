@@ -42,7 +42,7 @@ public class InventoryCommands {
 
         // /pman inventory showbackup <player> [year] [month] [day] [hour] [minute]
         // [second]
-        case "shobackup":
+        case "showbackup":
             if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
                 return Commands.errorOccurred(sender, configManager.getNoPermMsg());
             }
