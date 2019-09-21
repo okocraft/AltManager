@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 class StatementCaller implements Callable<Optional<ResultSet>> {
     private final PreparedStatement statement;
 
-    public StatementCaller(PreparedStatement statement) {
+    StatementCaller(PreparedStatement statement) {
         this.statement = statement;
     }
 
