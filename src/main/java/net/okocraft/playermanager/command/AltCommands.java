@@ -123,6 +123,7 @@ class AltCommands {
     }
 
     private static boolean uniqueAccessCommand(CommandSender sender) {
+        // TODO: player.getAddress() が null の場合を考慮する。
         sender.sendMessage(String.valueOf(Bukkit.getOnlinePlayers().stream()
                 .map(player -> player.getAddress().getAddress().getHostAddress()).distinct().count()));
 
