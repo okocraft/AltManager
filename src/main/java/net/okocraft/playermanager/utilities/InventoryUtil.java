@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-// TODO: invFolderPath.toFile().list() の null 可能性をどうにかする
+// TODO: invFolderPath.toFile().list() と file.listFiles() の null 可能性をどうにかする
 public class InventoryUtil {
 
     private static final File dataFolder = PlayerManager.getInstance().getDataFolder();
