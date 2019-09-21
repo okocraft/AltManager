@@ -113,7 +113,7 @@ class AltCommands {
         StringBuilder sb = new StringBuilder();
         alts.forEach(playerUuid -> {
             String playerName = Bukkit.getOfflinePlayer(UUID.fromString(playerUuid)).getName();
-            if (!playerName.equals(args[2])) {
+            if (playerName != null && !playerName.equals(args[2])) {
                 sb.append(playerName).append(", ");
             }
         });
