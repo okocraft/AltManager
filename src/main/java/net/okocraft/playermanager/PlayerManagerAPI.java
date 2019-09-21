@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-class PlayerManagerAPI {
+public class PlayerManagerAPI {
 
     private static final PlayerTable table = PlayerManager.getInstance().getDatabase().getPlayerTable();
 
