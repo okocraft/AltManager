@@ -99,7 +99,7 @@ class AltCommands {
 
         List<String> alts = database.get(playerTable.getPlayerTableName(), "uuid", "address", address);
 
-        if (args.length == 3 || (args.length >= 4 && args[3].equalsIgnoreCase("false"))) {
+        if (args.length == 3 || (args[3].equalsIgnoreCase("false"))) {
             Set<String> authorizedAlts = playerTable.getAuthorizedAlts(args[2]);
             alts.removeIf(authorizedAlts::contains);
         }
