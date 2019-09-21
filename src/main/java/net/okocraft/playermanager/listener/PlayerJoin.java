@@ -50,17 +50,17 @@ public class PlayerJoin implements Listener {
 
         Player player = event.getPlayer();
         String address = player.getAddress() == null ? "UNKNOWN" : player.getAddress().getAddress().getHostAddress();
-        String Uuid = player.getUniqueId().toString();
+        String uuid = player.getUniqueId().toString();
         String joinedPlayerName = player.getName();
-        String beforePlayerName = playerTable.getPlayerData("player", Uuid);
+        String beforePlayerName = playerTable.getPlayerData("player", uuid);
 
         LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
 
-        if (!playerTable.existPlayer(Uuid)) {
+        if (!playerTable.existPlayer(uuid)) {
             database.insert(playerTable.getPlayerTableName(), new HashMap<String, String>() {
                 private static final long serialVersionUID = 1L;
                 {
-                    put("uuid", Uuid);
+                    put("uuid", uuid);
                     put("player", joinedPlayerName);
                     put("address", address);
                 }
@@ -69,11 +69,11 @@ public class PlayerJoin implements Listener {
             onNameChanged(player, joinedPlayerName, beforePlayerName);
         }
 
-        String oldAddress = playerTable.getPlayerData("address", Uuid);
+        String oldAddress = playerTable.getPlayerData("address", uuid);
         if (!oldAddress.equals(address))
             database.set(playerTable.getPlayerTableName(), "address", address, "address", oldAddress);
 
-        playerTable.setPlayerData("address", Uuid, address);
+        playerTable.setPlayerData("address", uuid, address);
         List<String> accounts = database.get(playerTable.getPlayerTableName(), "player", "address", address);
         if (accounts.size() > 1) {
             StringBuilder sb = new StringBuilder();
@@ -91,18 +91,18 @@ public class PlayerJoin implements Listener {
                                     .replaceAll("%alts%", sb.substring(0, sb.length() - 2))));
         }
 
-        String renameLogOnDate = playerTable.getPlayerData("renamelogondate", Uuid);
+        String renameLogOnDate = playerTable.getPlayerData("renamelogondate", uuid);
 
         try {
             LocalDateTime term = LocalDateTime.parse(renameLogOnDate, InventoryUtil.getFormat())
                     .plusDays(config.getNotifyPreviousNameTerm());
             if (config.isNotifyPreviousNameEnabled() && term.compareTo(now) >= 0) {
                 Bukkit.broadcastMessage(config.getNotifyPreviousNameMsg()
-                        .replaceAll("%oldname%", playerTable.getPlayerData("previous", Uuid))
+                        .replaceAll("%oldname%", playerTable.getPlayerData("previous", uuid))
                         .replaceAll("%player%", joinedPlayerName));
             }
         } catch (DateTimeParseException exception) {
-            playerTable.setPlayerData("renamelogondate", Uuid, LocalDateTime.MIN.format(InventoryUtil.getFormat()));
+            playerTable.setPlayerData("renamelogondate", uuid, LocalDateTime.MIN.format(InventoryUtil.getFormat()));
         }
 
     }
