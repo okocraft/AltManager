@@ -16,7 +16,7 @@ class StatementRunner implements Runnable {
 
     @Override
     public void run() {
-        try (Statement stmt = statement) {
+        try (Statement ignored = statement) {
             statement.executeBatch();
         } catch (SQLException exception) {
             exception.printStackTrace();
