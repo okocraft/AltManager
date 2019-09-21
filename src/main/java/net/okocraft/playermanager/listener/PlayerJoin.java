@@ -28,6 +28,7 @@ import net.okocraft.playermanager.database.Database;
 import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.ConfigManager;
 import net.okocraft.playermanager.utilities.InventoryUtil;
+import org.bukkit.scoreboard.ScoreboardManager;
 
 public class PlayerJoin implements Listener {
 
@@ -152,8 +153,12 @@ public class PlayerJoin implements Listener {
     }
 
     private void migrateScores(String newName, String oldName) {
-        Scoreboard mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        Set<Objective> Objectives = mainScoreboard.getObjectives();
+        ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
+        if (scoreboardManager == null){
+            PlayerManager.getInstance().getLog().warning("Bukkit.getScoreboardManager() が null のため、スコア移行は行われませんでした");
+            return;
+        }
+        Set<Objective> Objectives = scoreboardManager.getMainScoreboard().getObjectives();
 
         Objectives.forEach(objective -> {
             Score score = objective.getScore(oldName);
@@ -162,6 +167,6 @@ public class PlayerJoin implements Listener {
         });
 
         if (config.isOldScoreResetEnabled())
-            mainScoreboard.resetScores(oldName);
+            scoreboardManager.getMainScoreboard().resetScores(oldName);
     }
 }
