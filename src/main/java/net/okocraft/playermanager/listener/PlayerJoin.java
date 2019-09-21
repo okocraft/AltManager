@@ -1,5 +1,21 @@
 package net.okocraft.playermanager.listener;
 
+import net.okocraft.playermanager.PlayerManager;
+import net.okocraft.playermanager.database.Database;
+import net.okocraft.playermanager.database.PlayerTable;
+import net.okocraft.playermanager.utilities.ConfigManager;
+import net.okocraft.playermanager.utilities.InventoryUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
+import org.bukkit.scoreboard.ScoreboardManager;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,24 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
-
-import net.okocraft.playermanager.PlayerManager;
-import net.okocraft.playermanager.database.Database;
-import net.okocraft.playermanager.database.PlayerTable;
-import net.okocraft.playermanager.utilities.ConfigManager;
-import net.okocraft.playermanager.utilities.InventoryUtil;
-import org.bukkit.scoreboard.ScoreboardManager;
 
 public class PlayerJoin implements Listener {
 
@@ -57,6 +55,7 @@ public class PlayerJoin implements Listener {
         if (!playerTable.existPlayer(uuid)) {
             database.insert(playerTable.getPlayerTableName(), new HashMap<String, String>() {
                 private static final long serialVersionUID = 1L;
+
                 {
                     put("uuid", uuid);
                     put("player", joinedPlayerName);
@@ -109,6 +108,7 @@ public class PlayerJoin implements Listener {
         String uuid = player.getUniqueId().toString();
         Map<String, String> newValues = new HashMap<String, String>() {
             private static final long serialVersionUID = 1L;
+
             {
                 put("previous", oldName);
                 put("player", newName);
@@ -154,7 +154,7 @@ public class PlayerJoin implements Listener {
 
     private void migrateScores(String newName, String oldName) {
         ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
-        if (scoreboardManager == null){
+        if (scoreboardManager == null) {
             PlayerManager.getInstance().getLog().warning("Bukkit.getScoreboardManager() が null のため、スコア移行は行われませんでした");
             return;
         }
