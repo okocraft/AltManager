@@ -140,11 +140,7 @@ public class InventoryUtil {
     public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour,
             int minute, int second) {
         Optional<File> backupFile = getBackupFile(player, isEnderChest, year, month, day, hour, minute, second);
-        if (backupFile.isPresent()) {
-            return fromBackup(backupFile.get().toPath());
-        } else {
-            return "";
-        }
+        return backupFile.map(file -> fromBackup(file.toPath())).orElse("");
     }
 
     public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour,
