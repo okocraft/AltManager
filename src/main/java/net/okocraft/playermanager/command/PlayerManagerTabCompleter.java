@@ -1,12 +1,9 @@
 package net.okocraft.playermanager.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
+import net.okocraft.playermanager.PlayerManager;
+import net.okocraft.playermanager.database.Database;
+import net.okocraft.playermanager.database.PlayerTable;
+import net.okocraft.playermanager.utilities.InventoryUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -14,10 +11,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.util.StringUtil;
 
-import net.okocraft.playermanager.PlayerManager;
-import net.okocraft.playermanager.database.Database;
-import net.okocraft.playermanager.database.PlayerTable;
-import net.okocraft.playermanager.utilities.InventoryUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class PlayerManagerTabCompleter implements TabCompleter {
 
@@ -57,23 +56,23 @@ class PlayerManagerTabCompleter implements TabCompleter {
             return resultList;
 
         switch (subCommand) {
-        case "alt":
-            return onTabCompleteAlt(sender, resultList, args);
-        case "namechange":
-            return onTabCompleteNameChange(sender, resultList, args);
-        case "inventory":
-            return onTabCompleteInventory(false, sender, resultList, args);
-        case "enderchest":
-            return onTabCompleteInventory(true, sender, resultList, args);
-        case "database":
-            return onTabCompleteDatabase(resultList, args);
-        default:
-            return resultList;
+            case "alt":
+                return onTabCompleteAlt(sender, resultList, args);
+            case "namechange":
+                return onTabCompleteNameChange(sender, resultList, args);
+            case "inventory":
+                return onTabCompleteInventory(false, sender, resultList, args);
+            case "enderchest":
+                return onTabCompleteInventory(true, sender, resultList, args);
+            case "database":
+                return onTabCompleteDatabase(resultList, args);
+            default:
+                return resultList;
         }
     }
 
     private List<String> onTabCompleteNameChange(CommandSender sender, List<String> resultList, String[] args) {
-        
+
         List<String> nameChangeSubCommands = new ArrayList<>();
 
         if (sender.hasPermission("playermanager.namechange.previousname")) {
@@ -84,7 +83,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
         if (args.length == 2) {
             return StringUtil.copyPartialMatches(args[1], nameChangeSubCommands, resultList);
         }
-        
+
         String nameChangeSubCommand = args[1].toLowerCase();
         if (!nameChangeSubCommands.contains(nameChangeSubCommand)) {
             return resultList;
@@ -144,34 +143,34 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 3) {
             switch (altSubCommand) {
-            case "ip":
-            case "search":
-            case "authorize":
-            case "auth":
-            case "unauthorize":
-            case "unauth":
-            case "authorizedlist":
-            case "authlist":
-                return StringUtil.copyPartialMatches(args[2], playerList, resultList);
+                case "ip":
+                case "search":
+                case "authorize":
+                case "auth":
+                case "unauthorize":
+                case "unauth":
+                case "authorizedlist":
+                case "authlist":
+                    return StringUtil.copyPartialMatches(args[2], playerList, resultList);
             }
         }
 
         switch (altSubCommand) {
-        case "authorize":
-        case "auth":
-        case "search":
-            if (!playerList.contains(args[2])) {
-                return resultList;
-            }
+            case "authorize":
+            case "auth":
+            case "search":
+                if (!playerList.contains(args[2])) {
+                    return resultList;
+                }
         }
 
         if (args.length == 4) {
             switch (altSubCommand) {
-            case "authorize":
-            case "auth":
-                return StringUtil.copyPartialMatches(args[3], playerList, resultList);
-            case "search":
-                return StringUtil.copyPartialMatches(args[3], Arrays.asList("true", "false"), resultList);
+                case "authorize":
+                case "auth":
+                    return StringUtil.copyPartialMatches(args[3], playerList, resultList);
+                case "search":
+                    return StringUtil.copyPartialMatches(args[3], Arrays.asList("true", "false"), resultList);
             }
         }
 
@@ -179,7 +178,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
     }
 
     private List<String> onTabCompleteInventory(boolean isEnderChest, CommandSender sender, List<String> resultList,
-            String[] args) {
+                                                String[] args) {
         String type = isEnderChest ? "enderchest" : "inventory";
 
         List<String> inventorySubCommands = new ArrayList<>();
@@ -205,18 +204,18 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 3) {
             switch (inventorySubCommand) {
-            case "showbackup":
-                if (sender.hasPermission("playermanager.inventory.showbackup.other"))
+                case "showbackup":
+                    if (sender.hasPermission("playermanager.inventory.showbackup.other"))
+                        return StringUtil.copyPartialMatches(args[2], playerList, resultList);
+                    else
+                        return StringUtil.copyPartialMatches(args[2], Collections.singletonList(sender.getName()), resultList);
+                case "searchbackup":
+                case "rollback":
                     return StringUtil.copyPartialMatches(args[2], playerList, resultList);
-                else
-                    return StringUtil.copyPartialMatches(args[2], Collections.singletonList(sender.getName()), resultList);
-            case "searchbackup":
-            case "rollback":
-                return StringUtil.copyPartialMatches(args[2], playerList, resultList);
-            case "backup":
-                return null;
-            default:
-                return resultList;
+                case "backup":
+                    return null;
+                default:
+                    return resultList;
             }
         }
 
@@ -229,17 +228,17 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 4) {
             switch (inventorySubCommand) {
-            case "searchbackup":
-                int maxpage = (InventoryUtil
-                        .searchFile(instance.getDataFolder().toPath().resolve(type).toFile(), args[2]).size() / 9) + 1;
-                return StringUtil.copyPartialMatches(args[3],
-                        IntStream.rangeClosed(1, maxpage).boxed().map(String::valueOf).collect(Collectors.toList()),
-                        resultList);
-            case "showbackup":
-            case "rollback":
-                return StringUtil.copyPartialMatches(args[3], years, resultList);
-            default:
-                return resultList;
+                case "searchbackup":
+                    int maxpage = (InventoryUtil
+                            .searchFile(instance.getDataFolder().toPath().resolve(type).toFile(), args[2]).size() / 9) + 1;
+                    return StringUtil.copyPartialMatches(args[3],
+                            IntStream.rangeClosed(1, maxpage).boxed().map(String::valueOf).collect(Collectors.toList()),
+                            resultList);
+                case "showbackup":
+                case "rollback":
+                    return StringUtil.copyPartialMatches(args[3], years, resultList);
+                default:
+                    return resultList;
             }
         }
 
@@ -251,11 +250,11 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 5) {
             switch (inventorySubCommand) {
-            case "showbackup":
-            case "rollback":
-                return StringUtil.copyPartialMatches(args[4], months, resultList);
-            default:
-                return resultList;
+                case "showbackup":
+                case "rollback":
+                    return StringUtil.copyPartialMatches(args[4], months, resultList);
+                default:
+                    return resultList;
             }
         }
 
@@ -267,11 +266,11 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 6) {
             switch (inventorySubCommand) {
-            case "showbackup":
-            case "rollback":
-                return StringUtil.copyPartialMatches(args[5], days, resultList);
-            default:
-                return resultList;
+                case "showbackup":
+                case "rollback":
+                    return StringUtil.copyPartialMatches(args[5], days, resultList);
+                default:
+                    return resultList;
             }
         }
 
@@ -283,11 +282,11 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 7) {
             switch (inventorySubCommand) {
-            case "showbackup":
-            case "rollback":
-                return StringUtil.copyPartialMatches(args[6], hours, resultList);
-            default:
-                return resultList;
+                case "showbackup":
+                case "rollback":
+                    return StringUtil.copyPartialMatches(args[6], hours, resultList);
+                default:
+                    return resultList;
             }
         }
 
@@ -299,11 +298,11 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 8) {
             switch (inventorySubCommand) {
-            case "showbackup":
-            case "rollback":
-                return StringUtil.copyPartialMatches(args[7], minutes, resultList);
-            default:
-                return resultList;
+                case "showbackup":
+                case "rollback":
+                    return StringUtil.copyPartialMatches(args[7], minutes, resultList);
+                default:
+                    return resultList;
             }
         }
 
@@ -316,11 +315,11 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 9) {
             switch (inventorySubCommand) {
-            case "showbackup":
-            case "rollback":
-                return StringUtil.copyPartialMatches(args[8], seconds, resultList);
-            default:
-                return resultList;
+                case "showbackup":
+                case "rollback":
+                    return StringUtil.copyPartialMatches(args[8], seconds, resultList);
+                default:
+                    return resultList;
             }
         }
 
@@ -343,9 +342,9 @@ class PlayerManagerTabCompleter implements TabCompleter {
         List<String> columnList = new ArrayList<>(database.getColumnMap(playerTable.getPlayerTableName()).keySet());
         if (args.length == 3) {
             switch (args[1].toLowerCase()) {
-            case "addplayer":
-                return null;
-            case "removeplayer":
+                case "addplayer":
+                    return null;
+                case "removeplayer":
                 case "existplayer":
                     return StringUtil.copyPartialMatches(args[2], playerList, resultList);
                 case "set":
@@ -353,7 +352,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
                 case "get":
                     return StringUtil.copyPartialMatches(args[2], columnList, resultList);
                 case "addcolumn":
-                return StringUtil.copyPartialMatches(args[2], Collections.singletonList("<new_column_name>"), resultList);
+                    return StringUtil.copyPartialMatches(args[2], Collections.singletonList("<new_column_name>"), resultList);
             }
         }
 
@@ -368,11 +367,11 @@ class PlayerManagerTabCompleter implements TabCompleter {
         List<String> sqlTypeList = Arrays.asList("TEXT", "INTEGER", "NONE", "NUMERIC", "REAL");
         if (args.length == 4) {
             switch (args[1].toLowerCase()) {
-            case "set":
+                case "set":
                 case "get":
                     return StringUtil.copyPartialMatches(args[3], playerList, resultList);
                 case "addcolumn":
-                return StringUtil.copyPartialMatches(args[3], sqlTypeList, resultList);
+                    return StringUtil.copyPartialMatches(args[3], sqlTypeList, resultList);
             }
         }
 
@@ -386,10 +385,10 @@ class PlayerManagerTabCompleter implements TabCompleter {
 
         if (args.length == 5) {
             switch (args[1].toLowerCase()) {
-            case "set":
-                return StringUtil.copyPartialMatches(args[4], Collections.singletonList("<value>"), resultList);
-            case "addcolumn":
-                return StringUtil.copyPartialMatches(args[4], Arrays.asList("<default_value>", "null"), resultList);
+                case "set":
+                    return StringUtil.copyPartialMatches(args[4], Collections.singletonList("<value>"), resultList);
+                case "addcolumn":
+                    return StringUtil.copyPartialMatches(args[4], Arrays.asList("<default_value>", "null"), resultList);
             }
         }
 
