@@ -227,7 +227,7 @@ public class InventoryCommands {
 
         if (year == null || month == null || day == null || hour == null || minute == null || second == null)
             return Commands.errorOccurred(sender, configManager.getInvalidArgMsg());
-        Optional<File> backup = InventoryUtil.getBackupFile((OfflinePlayer) player, isEnderChest, year, month, day,
+        Optional<File> backup = InventoryUtil.getBackupFile(player, isEnderChest, year, month, day,
                 hour, minute, second);
         if (backup.isPresent()) {
             InventoryUtil.restoreInventory(player, isEnderChest, backup.get());
