@@ -4,8 +4,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * @since 1.0.0-SNAPSHOT
  * @author akaregi
+ * @since 1.0.0-SNAPSHOT
  */
 class StatementRunner implements Runnable {
     private final Statement statement;
