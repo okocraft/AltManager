@@ -201,7 +201,7 @@ class PlayerManagerTabCompleter implements TabCompleter {
         if (!inventorySubCommands.contains(inventorySubCommand))
             return resultList;
 
-        List<String> playerList = new ArrayList<String>(playerTable.getPlayersMap().values());
+        List<String> playerList = new ArrayList<>(playerTable.getPlayersMap().values());
 
         if (args.length == 3) {
             switch (inventorySubCommand) {

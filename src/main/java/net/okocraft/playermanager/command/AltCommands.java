@@ -276,7 +276,7 @@ class AltCommands {
             playerTable.setAuthorizedAlts(authorizedAltsUuid, authorizedAltsForOthers);
         });
 
-        playerTable.setAuthorizedAlts(playerUuid, new HashSet<String>());
+        playerTable.setAuthorizedAlts(playerUuid, new HashSet<>());
         sender.sendMessage(configManager.getAltUnauthorizeMsg().replaceAll("%player%", args[2]));
 
         return true;
