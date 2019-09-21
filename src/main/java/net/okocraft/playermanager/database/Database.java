@@ -497,7 +497,7 @@ public class Database {
         String columns = columnsBuilder.toString().replaceAll(", $", "");
         String columnsExcludeType = colmunsBuilderExcludeType.toString().replaceAll(", $", "");
 
-        Statement statement = null;
+        Statement statement;
 
         try {
             if (connection.isPresent()) {
