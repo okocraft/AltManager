@@ -106,7 +106,7 @@ class AltCommands {
 
         if (args.length == 3 || (args.length >= 4 && args[3].equalsIgnoreCase("false"))) {
             Set<String> authorizedAlts = playerTable.getAuthorizedAlts(args[2]);
-            alts.removeIf(playerUuid -> authorizedAlts.contains(playerUuid));
+            alts.removeIf(authorizedAlts::contains);
         }
 
         if (alts.size() == 1) {
