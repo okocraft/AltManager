@@ -10,7 +10,7 @@ import java.sql.Statement;
 class StatementRunner implements Runnable {
     private final Statement statement;
 
-    public StatementRunner(Statement statement) {
+    StatementRunner(Statement statement) {
         this.statement = statement;
     }
 
