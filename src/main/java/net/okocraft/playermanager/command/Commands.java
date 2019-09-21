@@ -1,18 +1,16 @@
 package net.okocraft.playermanager.command;
 
-import java.net.InetSocketAddress;
-import java.util.UUID;
-
+import net.okocraft.playermanager.PlayerManager;
+import net.okocraft.playermanager.database.Database;
+import net.okocraft.playermanager.utilities.ConfigManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
-import net.okocraft.playermanager.PlayerManager;
-import net.okocraft.playermanager.database.Database;
-import net.okocraft.playermanager.utilities.ConfigManager;
+import java.net.InetSocketAddress;
+import java.util.UUID;
 
 public class Commands implements CommandExecutor {
     private final ConfigManager configManager;
@@ -38,30 +36,30 @@ public class Commands implements CommandExecutor {
         final String subCommand = args[0].toLowerCase();
 
         switch (subCommand) {
-        case "inventory":
-            if (!hasPermission(sender, "playermanager." + subCommand))
-                return false;
-            return InventoryCommands.inventoryCommands(sender, args, false);
-        case "enderchest":
-            if (!hasPermission(sender, "playermanager." + subCommand))
-                return false;
-            return InventoryCommands.inventoryCommands(sender, args, true);
-        case "database":
-            if (!hasPermission(sender, "playermanager." + subCommand))
-                return false;
-            return DatabaseCommands.databaseCommands(sender, args);
-        case "alt":
-            if (!hasPermission(sender, "playermanager." + subCommand))
-                return false;
-            return AltCommands.altCommands(sender, args);
-        case "namechange":
-            if (!hasPermission(sender, "playermanager." + subCommand))
-                return false;
-            return NameChangeCommands.nameChangeCommands(sender, args);
-        case "test":
-            if (!hasPermission(sender, "playermanager." + subCommand))
-                return false;
-            return test(sender);
+            case "inventory":
+                if (!hasPermission(sender, "playermanager." + subCommand))
+                    return false;
+                return InventoryCommands.inventoryCommands(sender, args, false);
+            case "enderchest":
+                if (!hasPermission(sender, "playermanager." + subCommand))
+                    return false;
+                return InventoryCommands.inventoryCommands(sender, args, true);
+            case "database":
+                if (!hasPermission(sender, "playermanager." + subCommand))
+                    return false;
+                return DatabaseCommands.databaseCommands(sender, args);
+            case "alt":
+                if (!hasPermission(sender, "playermanager." + subCommand))
+                    return false;
+                return AltCommands.altCommands(sender, args);
+            case "namechange":
+                if (!hasPermission(sender, "playermanager." + subCommand))
+                    return false;
+                return NameChangeCommands.nameChangeCommands(sender, args);
+            case "test":
+                if (!hasPermission(sender, "playermanager." + subCommand))
+                    return false;
+                return test(sender);
         }
         return errorOccurred(sender, configManager.getCommandNotExistMsg().replaceAll("%command%", subCommand));
     }
@@ -77,7 +75,7 @@ public class Commands implements CommandExecutor {
     /**
      * If entry is form of UUID, this returns string "uuid". Otherwise, this returns
      * string "player".
-     * 
+     *
      * @param entry エントリー
      * @return "uuid" or "player"
      */
