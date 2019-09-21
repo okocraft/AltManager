@@ -1,20 +1,15 @@
 package net.okocraft.playermanager.command;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-
 import net.md_5.bungee.api.ChatColor;
 import net.okocraft.playermanager.PlayerManager;
 import net.okocraft.playermanager.database.Database;
 import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.ConfigManager;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+
+import java.util.*;
 
 class AltCommands {
 
@@ -31,45 +26,45 @@ class AltCommands {
         final String subAltCommand = args[1].toLowerCase();
 
         switch (subAltCommand) {
-        case "ip":
-            if (!Commands.hasPermission(sender, "playermanager.alt.ip")) {
-                return false;
-            }
-            return ipCommand(sender, args);
-        case "search":
-            if (!Commands.hasPermission(sender, "playermanager.alt.search")) {
-                return false;
-            }
-            return searchCommand(sender, args);
-        case "onlinealts":
-            if (!Commands.hasPermission(sender, "playermanager.alt.onlinealts")) {
-                return false;
-            }
-            return onlineAltsCommand(sender);
-        case "uniqueaccess":
-        case "unique":
-            if (!Commands.hasPermission(sender, "playermanager.alt.uniqueaccess")) {
-                return false;
-            }
-            return uniqueAccessCommand(sender);
-        case "authorizedlist":
-        case "authlist":
-            if (!Commands.hasPermission(sender, "playermanager.alt.authorizedlist")) {
-                return false;
-            }
-            return authorizedListCommand(sender, args);
-        case "authorize":
-        case "auth":
-            if (!Commands.hasPermission(sender, "playermanager.alt.authorize")) {
-                return false;
-            }
-            return authorizeCommand(sender, args);
-        case "unauthorize":
-        case "unauth":
-            if (!Commands.hasPermission(sender, "playermanager.alt.unauthorize")) {
-                return false;
-            }
-            return unauthorizeCommand(sender, args);
+            case "ip":
+                if (!Commands.hasPermission(sender, "playermanager.alt.ip")) {
+                    return false;
+                }
+                return ipCommand(sender, args);
+            case "search":
+                if (!Commands.hasPermission(sender, "playermanager.alt.search")) {
+                    return false;
+                }
+                return searchCommand(sender, args);
+            case "onlinealts":
+                if (!Commands.hasPermission(sender, "playermanager.alt.onlinealts")) {
+                    return false;
+                }
+                return onlineAltsCommand(sender);
+            case "uniqueaccess":
+            case "unique":
+                if (!Commands.hasPermission(sender, "playermanager.alt.uniqueaccess")) {
+                    return false;
+                }
+                return uniqueAccessCommand(sender);
+            case "authorizedlist":
+            case "authlist":
+                if (!Commands.hasPermission(sender, "playermanager.alt.authorizedlist")) {
+                    return false;
+                }
+                return authorizedListCommand(sender, args);
+            case "authorize":
+            case "auth":
+                if (!Commands.hasPermission(sender, "playermanager.alt.authorize")) {
+                    return false;
+                }
+                return authorizeCommand(sender, args);
+            case "unauthorize":
+            case "unauth":
+                if (!Commands.hasPermission(sender, "playermanager.alt.unauthorize")) {
+                    return false;
+                }
+                return unauthorizeCommand(sender, args);
         }
 
         return Commands.errorOccurred(sender, configManager.getInvalidArgMsg());
