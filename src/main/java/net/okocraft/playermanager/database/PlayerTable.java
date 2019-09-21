@@ -1,23 +1,18 @@
 package net.okocraft.playermanager.database;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.val;
 import net.okocraft.playermanager.PlayerManager;
 import net.okocraft.playermanager.command.Commands;
 import net.okocraft.playermanager.utilities.InventoryUtil;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class PlayerTable {
 
@@ -46,14 +41,12 @@ public class PlayerTable {
     /**
      * 名前変更記録用テーブルにプレイヤーを追加する。 showWarningがtrueで失敗した場合はコンソールにログを出力する。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author akaregi
-     *
      * @param uuid        UUID
      * @param name        名前
      * @param showWarning コンソールログを出力するかどうか
-     *
      * @return 成功すればtrue 失敗すればfalse
+     * @author akaregi
+     * @since 1.0.0-SNAPSHOT
      */
     public boolean addPlayer(@NonNull String uuid, @NonNull String name, boolean showWarning) {
 
@@ -77,6 +70,7 @@ public class PlayerTable {
 
         boolean isInserted = database.insert(playerTableName, new HashMap<String, String>() {
             private static final long serialVersionUID = 1L;
+
             {
                 put("uuid", uuid);
                 put("player", name);
@@ -92,12 +86,10 @@ public class PlayerTable {
     /**
      * 名前変更記録用テーブルからプレイヤーを削除する。 失敗した場合はコンソールにログを出力する。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author LazyGon
-     *
      * @param entry プレイヤー
-     *
      * @return 成功すればtrue 失敗すればfalse
+     * @author LazyGon
+     * @since 1.0.0-SNAPSHOT
      */
     public boolean removePlayer(@NonNull String entry) {
 
@@ -112,10 +104,9 @@ public class PlayerTable {
     /**
      * 名前変更記録用テーブルに名前が記録されているか調べる。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author LazyGon
-     *
      * @param entry uuidでもmcidでも可
+     * @author LazyGon
+     * @since 1.0.0-SNAPSHOT
      */
     public boolean existPlayer(@NonNull String entry) {
         Map<String, String> playersMap = getPlayersMap();
@@ -125,11 +116,11 @@ public class PlayerTable {
     /**
      * {@code table}の{@code column}に値をセットする。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author LazyGon
-     *@param column 更新する列
+     * @param column 更新する列
      * @param entry  プレイヤー。uuidでもmcidでも可
      * @param value  新しい値
+     * @author LazyGon
+     * @since 1.0.0-SNAPSHOT
      */
     public void setPlayerData(String column, String entry, String value) {
 
@@ -146,12 +137,11 @@ public class PlayerTable {
      * {@code table} で指定したテーブルの列 {@code column} の値を取得する。
      * テーブル、カラム、レコードのいずれかが存在しない場合は対応するエラー文字列を返す。
      *
+     * @param column カラム
+     * @param entry  エントリー
+     * @return 値
      * @author akaregi
      * @since 1.0.0-SNAPSHOT
-     *
-     * @param column カラム
-     * @param entry エントリー
-     * @return 値
      */
     public String getPlayerData(String column, String entry) {
 
@@ -200,10 +190,9 @@ public class PlayerTable {
     /**
      * 名前変更記録用テーブルに登録されているプレイヤーのUUIDとその名前のマップを取得する。
      *
+     * @return プレイヤー名とそのUUIDのマップ
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     * @return プレイヤー名とそのUUIDのマップ
      */
     public Map<String, String> getPlayersMap() {
 
@@ -229,11 +218,9 @@ public class PlayerTable {
     /**
      * エントリーの複数のカラムの値を一気に取得する。 マップはLinkedHashMapで、引数のListの順番を引き継ぐ。
      *
+     * @return カラムと値のマップ
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     *
-     * @return カラムと値のマップ
      */
     public Map<String, String> getPlayerDataMultiValue(List<String> columns, String entry) {
         String entryType = Commands.checkEntryType(entry);
@@ -253,8 +240,6 @@ public class PlayerTable {
      *
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     *
      */
     public void setPlayerDataMultiValue(Map<String, String> columnValueMap, String entry) {
         String entryType = Commands.checkEntryType(entry);
