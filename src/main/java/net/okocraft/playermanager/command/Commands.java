@@ -90,12 +90,12 @@ public class Commands implements CommandExecutor {
         }
     }
 
-    public static boolean errorOccurred(CommandSender sender, String msg) {
+    static boolean errorOccurred(CommandSender sender, String msg) {
         sender.sendMessage(msg);
         return false;
     }
 
-    public static boolean hasPermission(CommandSender sender, String permission) {
+    static boolean hasPermission(CommandSender sender, String permission) {
         if (!sender.hasPermission(permission))
             return errorOccurred(sender, PlayerManager.getInstance().getConfigManager().getNoPermMsg());
         return true;
