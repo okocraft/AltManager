@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import com.google.common.primitives.Ints;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -81,8 +82,8 @@ class InventoryCommands {
         }
 
         Integer page = null;
-        if (args.length >= 4) {
-            page = Ints.tryParse(args[3]);
+        if (args.length >= 4 && NumberUtils.isNumber(args[3])) {
+            page = NumberUtils.toInt(args[3]);
         }
 
         if (args.length == 3 || page == null) {
@@ -127,7 +128,9 @@ class InventoryCommands {
 
         Integer year = null;
         if (args.length >= 4) {
-            year = Ints.tryParse(args[3]);
+            if (NumberUtils.isNumber(args[3])) {
+                year = NumberUtils.toInt(args[3]);
+            }
             if (year == null) {
                 ((Player) sender)
                         .openInventory(InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest)));
@@ -142,7 +145,9 @@ class InventoryCommands {
 
         Integer month = null;
         if (args.length >= 5) {
-            month = Ints.tryParse(args[4]);
+            if (NumberUtils.isNumber(args[4])) {
+                month = NumberUtils.toInt(args[4]);
+            }
             if (month == null) {
                 ((Player) sender).openInventory(
                         InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year)));
@@ -155,7 +160,9 @@ class InventoryCommands {
 
         Integer day = null;
         if (args.length >= 6) {
-            day = Ints.tryParse(args[5]);
+            if (NumberUtils.isNumber(args[5])) {
+                day = NumberUtils.toInt(args[5]);
+            }
             if (day == null) {
                 ((Player) sender).openInventory(
                         InventoryUtil.fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month)));
@@ -168,7 +175,9 @@ class InventoryCommands {
 
         Integer hour = null;
         if (args.length >= 7) {
-            hour = Ints.tryParse(args[6]);
+            if (NumberUtils.isNumber(args[6])) {
+                hour = NumberUtils.toInt(args[6]);
+            }
             if (hour == null) {
                 ((Player) sender).openInventory(InventoryUtil
                         .fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day)));
@@ -181,7 +190,9 @@ class InventoryCommands {
 
         Integer minute = null;
         if (args.length >= 8) {
-            minute = Ints.tryParse(args[7]);
+            if (NumberUtils.isNumber(args[7])) {
+                minute = NumberUtils.toInt(args[7]);
+            }
             if (minute == null) {
                 ((Player) sender).openInventory(InventoryUtil
                         .fromBase64(InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day, hour)));
@@ -194,7 +205,9 @@ class InventoryCommands {
 
         Integer second = null;
         if (args.length == 9) {
-            second = Ints.tryParse(args[8]);
+            if (NumberUtils.isNumber(args[8])) {
+                second = NumberUtils.toInt(args[8]);
+            }
             if (second == null) {
                 ((Player) sender).openInventory(InventoryUtil.fromBase64(
                         InventoryUtil.fromBackup(offlinePlayer, isEnderChest, year, month, day, hour, minute)));
@@ -217,13 +230,14 @@ class InventoryCommands {
         if (player == null) {
             return Commands.errorOccurred(sender, configManager.getNoPlayerFoundMsg().replaceAll("%player%", args[2]));
         }
+        Integer year = null, month = null, day = null, hour = null, minute = null, second = null;
 
-        Integer year = Ints.tryParse(args[3]);
-        Integer month = Ints.tryParse(args[4]);
-        Integer day = Ints.tryParse(args[5]);
-        Integer hour = Ints.tryParse(args[6]);
-        Integer minute = Ints.tryParse(args[7]);
-        Integer second = Ints.tryParse(args[8]);
+        if (NumberUtils.isNumber(args[3])) year = NumberUtils.toInt(args[3]);
+        if (NumberUtils.isNumber(args[4])) month = NumberUtils.toInt(args[4]);
+        if (NumberUtils.isNumber(args[5])) day = NumberUtils.toInt(args[5]);
+        if (NumberUtils.isNumber(args[6])) hour = NumberUtils.toInt(args[6]);
+        if (NumberUtils.isNumber(args[7])) minute = NumberUtils.toInt(args[7]);
+        if (NumberUtils.isNumber(args[8])) second = NumberUtils.toInt(args[8]);
 
         if (year == null || month == null || day == null || hour == null || minute == null || second == null)
             return Commands.errorOccurred(sender, configManager.getInvalidArgMsg());
