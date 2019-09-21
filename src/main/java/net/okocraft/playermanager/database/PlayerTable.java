@@ -127,20 +127,19 @@ public class PlayerTable {
      *
      * @since 1.0.0-SNAPSHOT
      * @author LazyGon
-     *
-     * @param column 更新する列
+     *@param column 更新する列
      * @param entry  プレイヤー。uuidでもmcidでも可
      * @param value  新しい値
      */
-    public boolean setPlayerData(String column, String entry, String value) {
+    public void setPlayerData(String column, String entry, String value) {
 
         if (!existPlayer(entry)) {
             log.warning(":NO_RECORD_FOR_" + entry + "_EXIST");
-            return false;
+            return;
         }
 
         String entryType = Commands.checkEntryType(entry);
-        return database.set(playerTableName, column, value, entryType, entry);
+        database.set(playerTableName, column, value, entryType, entry);
     }
 
     /**
@@ -182,13 +181,13 @@ public class PlayerTable {
         return new HashSet<>(Arrays.asList(authorizedaltsString.split(", ")));
     }
 
-    public boolean setAuthorizedAlts(String entry, Set<String> authorizedAlts) {
+    public void setAuthorizedAlts(String entry, Set<String> authorizedAlts) {
         if (Commands.checkEntryType(entry).equals("player")) {
             entry = getPlayerData("uuid", entry);
         }
         if (authorizedAlts.isEmpty()) {
             database.set(playerTableName, "authorizedalts", "", entry);
-            return true;
+            return;
         }
 
         authorizedAlts.removeIf(uuid -> !Commands.checkEntryType(uuid).equals("uuid"));
@@ -198,7 +197,7 @@ public class PlayerTable {
             sb.append(authorizedAlt + ", ");
         });
 
-        return database.set(playerTableName, "authorizedalts", sb.substring(0, sb.length() - 2), entry);
+        database.set(playerTableName, "authorizedalts", sb.substring(0, sb.length() - 2), entry);
     }
 
     /**
@@ -259,10 +258,9 @@ public class PlayerTable {
      * @since 1.0.0-SNAPSHOT
      *
      *
-     * @return カラムと値のマップ
      */
-    public boolean setPlayerDataMultiValue(Map<String, String> columnValueMap, String entry) {
+    public void setPlayerDataMultiValue(Map<String, String> columnValueMap, String entry) {
         String entryType = Commands.checkEntryType(entry);
-        return database.setMultiValue(playerTableName, columnValueMap, entry, entryType);
+        database.setMultiValue(playerTableName, columnValueMap, entry, entryType);
     }
 }

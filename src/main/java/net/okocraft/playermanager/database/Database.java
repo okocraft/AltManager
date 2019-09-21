@@ -467,20 +467,19 @@ public class Database {
      * @param defaultValue デフォルトの値。必要ない場合はnullを指定する。
      * @param showWarning  同じ列が存在したときにコンソールに警告を表示するかどうか
      *
-     * @return 成功したなら {@code true} 、さもなくば {@code false} 。
      */
-    public boolean addColumn(String table, String column, String type, String defaultValue, boolean showWarning) {
+    public void addColumn(String table, String column, String type, String defaultValue, boolean showWarning) {
 
         if (getColumnMap(table).containsKey(column)) {
             if (showWarning)
                 log.warning(":COLUMN_EXIST");
-            return false;
+            return;
         }
 
         defaultValue = (defaultValue != null) ? " NOT NULL DEFAULT '" + defaultValue + "'" : "";
         val statement = prepare("ALTER TABLE " + table + " ADD " + column + " " + type + defaultValue);
 
-        return statement.map(stmt -> {
+        statement.map(stmt -> {
             try {
                 stmt.addBatch();
 
@@ -491,7 +490,7 @@ public class Database {
                 exception.printStackTrace();
                 return false;
             }
-        }).orElse(false);
+        });
     }
 
     /**
@@ -503,15 +502,14 @@ public class Database {
      * @param table  削除する列があるテーブル
      * @param column 削除する列の名前。
      *
-     * @return 成功したなら {@code true} 、さもなくば {@code false} 。
      */
-    public boolean dropColumn(String table, String column) {
+    public void dropColumn(String table, String column) {
 
         Map<String, String> columnMap = getColumnMap(table);
 
         if (!columnMap.containsKey(column)) {
             log.warning(":NO_COLUMN_NAMED_" + column + "_EXIST");
-            return false;
+            return;
         }
 
         // 新しいテーブルの列
@@ -543,10 +541,8 @@ public class Database {
 
             // Execute this batch
             threadPool.submit(new StatementRunner(statement));
-            return true;
         } catch (SQLException exception) {
             exception.printStackTrace();
-            return false;
         }
     }
 
