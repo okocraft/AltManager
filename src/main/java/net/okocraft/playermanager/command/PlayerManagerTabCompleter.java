@@ -345,17 +345,14 @@ public class PlayerManagerTabCompleter implements TabCompleter {
             case "addplayer":
                 return null;
             case "removeplayer":
-                return StringUtil.copyPartialMatches(args[2], playerList, resultList);
-            case "existplayer":
-                return StringUtil.copyPartialMatches(args[2], playerList, resultList);
-            case "set":
-                return StringUtil.copyPartialMatches(args[2], columnList, resultList);
-            case "get":
-                return StringUtil.copyPartialMatches(args[2], columnList, resultList);
-            case "addcolumn":
+                case "existplayer":
+                    return StringUtil.copyPartialMatches(args[2], playerList, resultList);
+                case "set":
+                case "dropcolumn":
+                case "get":
+                    return StringUtil.copyPartialMatches(args[2], columnList, resultList);
+                case "addcolumn":
                 return StringUtil.copyPartialMatches(args[2], Arrays.asList("<new_column_name>"), resultList);
-            case "dropcolumn":
-                return StringUtil.copyPartialMatches(args[2], columnList, resultList);
             }
         }
 
@@ -371,10 +368,9 @@ public class PlayerManagerTabCompleter implements TabCompleter {
         if (args.length == 4) {
             switch (args[1].toLowerCase()) {
             case "set":
-                return StringUtil.copyPartialMatches(args[3], playerList, resultList);
-            case "get":
-                return StringUtil.copyPartialMatches(args[3], playerList, resultList);
-            case "addcolumn":
+                case "get":
+                    return StringUtil.copyPartialMatches(args[3], playerList, resultList);
+                case "addcolumn":
                 return StringUtil.copyPartialMatches(args[3], sqlTypeList, resultList);
             }
         }
