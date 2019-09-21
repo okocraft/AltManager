@@ -117,19 +117,15 @@ public class InventoryUtil {
 
         String type = isEnderChest ? "enderchest" : "inventory";
 
-        Path filePath = dataFolder.toPath().resolve(type).resolve(timeFormat)
-                .resolve(player.getUniqueId().toString() + ".log");
-        File logFile = filePath.toFile();
+        Path filePath = dataFolder.toPath().resolve(type).resolve(timeFormat).resolve(player.getUniqueId().toString() + ".log");
 
         try {
-            if (!logFile.exists()) {
+            if (!Files.exists(filePath)) {
                 Files.createDirectories(filePath.getParent());
-                logFile.createNewFile();
-            } else if (logFile.isDirectory()) {
-                logFile.createNewFile();
+                Files.createFile(filePath);
             }
             Inventory inv = isEnderChest ? player.getEnderChest() : player.getInventory();
-            FileWriter fw = new FileWriter(logFile, true);
+            FileWriter fw = new FileWriter(filePath.toFile(), true);
             fw.append(toBase64(inv));
             fw.close();
         } catch (IOException exception) {
