@@ -1,5 +1,5 @@
 main: net.okocraft.playermanager.PlayerManager
-name: ${project.artifactId}
+name: PlayerManager
 version: ${project.version}
 description: "Execute some actions when renamed players joined."
 authors: [okocraft]
