@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
-public class StatementCaller implements Callable<Optional<ResultSet>> {
+class StatementCaller implements Callable<Optional<ResultSet>> {
     private final PreparedStatement statement;
 
     public StatementCaller(PreparedStatement statement) {

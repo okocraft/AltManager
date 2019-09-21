@@ -13,7 +13,7 @@ import lombok.NonNull;
 import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.InventoryUtil;
 
-public class PlayerManagerAPI {
+class PlayerManagerAPI {
 
     private static final PlayerTable table = PlayerManager.getInstance().getDatabase().getPlayerTable();
 
@@ -43,7 +43,7 @@ public class PlayerManagerAPI {
         return LocalDateTime.parse(date, InventoryUtil.getFormat());
     }
 
-    public static String getAddress(OfflinePlayer player) {
+    private static String getAddress(OfflinePlayer player) {
         return table.getPlayerData("renamelogondate", player.getUniqueId().toString());
     }
 

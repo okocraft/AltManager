@@ -18,7 +18,7 @@ import net.okocraft.playermanager.database.Database;
 import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.InventoryUtil;
 
-public class PlayerManagerTabCompleter implements TabCompleter {
+class PlayerManagerTabCompleter implements TabCompleter {
 
     private PlayerManager instance;
     private Database database;

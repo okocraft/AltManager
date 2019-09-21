@@ -16,13 +16,13 @@ import net.okocraft.playermanager.PlayerManager;
 import net.okocraft.playermanager.utilities.ConfigManager;
 import net.okocraft.playermanager.utilities.InventoryUtil;
 
-public class InventoryCommands {
+class InventoryCommands {
 
     private static final PlayerManager instance = PlayerManager.getInstance();
     private static final ConfigManager configManager = instance.getConfigManager();
 
-    protected static boolean inventoryCommands(CommandSender sender, String[] args,
-            boolean isEnderChest) {
+    static boolean inventoryCommands(CommandSender sender, String[] args,
+                                     boolean isEnderChest) {
         if (args.length == 1) {
             return Commands.errorOccurred(sender, configManager.getNoEnoughArgMsg());
         }
@@ -66,7 +66,7 @@ public class InventoryCommands {
         return Commands.errorOccurred(sender, configManager.getInvalidArgMsg());
     }
 
-    public static boolean searchBackupCommand(CommandSender sender, boolean isEnderChest, String[] args) {
+    private static boolean searchBackupCommand(CommandSender sender, boolean isEnderChest, String[] args) {
         String type = isEnderChest ? "enderchest" : "inventory";
 
         if (args.length <= 2) {

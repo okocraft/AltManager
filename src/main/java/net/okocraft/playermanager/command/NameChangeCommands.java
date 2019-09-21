@@ -7,14 +7,14 @@ import net.okocraft.playermanager.database.Database;
 import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.ConfigManager;
 
-public class NameChangeCommands {
+class NameChangeCommands {
 
     private static final PlayerManager instance = PlayerManager.getInstance();
     private static final ConfigManager configManager = instance.getConfigManager();
     private static final Database database = instance.getDatabase();
     private static final PlayerTable playerTable = database.getPlayerTable();
 
-    protected static boolean nameChangeCommands(CommandSender sender, String[] args) {
+    static boolean nameChangeCommands(CommandSender sender, String[] args) {
         if (args.length == 1) {
             return Commands.errorOccurred(sender, configManager.getNoEnoughArgMsg());
         }

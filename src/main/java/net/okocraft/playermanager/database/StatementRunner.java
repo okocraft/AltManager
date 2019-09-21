@@ -7,7 +7,7 @@ import java.sql.Statement;
  * @since 1.0.0-SNAPSHOT
  * @author akaregi
  */
-public class StatementRunner implements Runnable {
+class StatementRunner implements Runnable {
     private final Statement statement;
 
     public StatementRunner(Statement statement) {

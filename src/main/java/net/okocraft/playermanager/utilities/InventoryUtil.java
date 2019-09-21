@@ -54,7 +54,7 @@ public class InventoryUtil {
      * @param inventory to serialize
      * @return Base64 string of the provided inventory
      */
-    public static String toBase64(Inventory inventory) {
+    private static String toBase64(Inventory inventory) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);) {
 
@@ -233,7 +233,7 @@ public class InventoryUtil {
         return fromBackup(recentBackupPath);
     }
 
-    public static String fromBackup(Path path) {
+    private static String fromBackup(Path path) {
 
         StringBuilder sb = new StringBuilder();
         try {
