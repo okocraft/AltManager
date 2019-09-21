@@ -56,7 +56,7 @@ public class InventoryUtil {
      */
     private static String toBase64(Inventory inventory) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);) {
+                BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
 
             // Write the size of the inventory
             dataOutput.writeInt(inventory.getSize());
@@ -87,7 +87,7 @@ public class InventoryUtil {
      */
     public static Inventory fromBase64(String data) {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
-                BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);) {
+                BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
             int originalInventorySize = dataInput.readInt();
             int inventorySize = originalInventorySize % 9 == 0 ? originalInventorySize : ((originalInventorySize / 9) + 1) * 9;
             Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Inventory Backup");
