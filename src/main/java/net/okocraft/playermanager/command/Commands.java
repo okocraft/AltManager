@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -13,15 +14,18 @@ import net.okocraft.playermanager.database.Database;
 import net.okocraft.playermanager.utilities.ConfigManager;
 
 public class Commands implements CommandExecutor {
-    private final PlayerManager instance;
     private final ConfigManager configManager;
 
-    public Commands(Plugin plugin, Database database) {
-        this.instance = (PlayerManager) plugin;
-        this.configManager = instance.getConfigManager();
+    public Commands(PlayerManager plugin, Database database) {
+        this.configManager = plugin.getConfigManager();
 
-        instance.getCommand("playermanager").setExecutor(this);
-        instance.getCommand("playermanager").setTabCompleter(new PlayerManagerTabCompleter(database));
+        PluginCommand command = plugin.getCommand("playermanager");
+        if (command != null) {
+            command.setExecutor(this);
+            command.setTabCompleter(new PlayerManagerTabCompleter(database));
+        } else {
+            plugin.getLog().warning("/playermanager が null でした。コマンドは使用できません。");
+        }
     }
 
     @Override
