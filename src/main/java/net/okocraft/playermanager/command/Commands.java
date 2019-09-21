@@ -81,6 +81,7 @@ public class Commands implements CommandExecutor {
      */
     public static String checkEntryType(String entry) {
         try {
+            // TODO: メソッドの結果の無視。例外での戻り値判定を別の方法にできないか
             UUID.fromString(entry);
             return "uuid";
         } catch (IllegalArgumentException e) {
