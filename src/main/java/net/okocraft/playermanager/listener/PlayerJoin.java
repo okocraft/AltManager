@@ -49,7 +49,7 @@ public class PlayerJoin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
 
         Player player = event.getPlayer();
-        String address = player.getAddress().getAddress().getHostAddress();
+        String address = player.getAddress() == null ? "UNKNOWN" : player.getAddress().getAddress().getHostAddress();
         String Uuid = player.getUniqueId().toString();
         String joinedPlayerName = player.getName();
         String beforePlayerName = playerTable.getPlayerData("player", Uuid);
