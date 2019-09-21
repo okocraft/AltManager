@@ -1,21 +1,18 @@
 package net.okocraft.playermanager.command;
 
-import java.io.File;
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.Optional;
-
-import com.google.common.primitives.Ints;
-
+import net.okocraft.playermanager.PlayerManager;
+import net.okocraft.playermanager.utilities.ConfigManager;
+import net.okocraft.playermanager.utilities.InventoryUtil;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.okocraft.playermanager.PlayerManager;
-import net.okocraft.playermanager.utilities.ConfigManager;
-import net.okocraft.playermanager.utilities.InventoryUtil;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.Optional;
 
 class InventoryCommands {
 
@@ -33,35 +30,35 @@ class InventoryCommands {
 
         switch (subInventoryCommand) {
 
-        // /pman inventory searchbackup <player>
-        case "searchbackup":
-            if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
-                return Commands.errorOccurred(sender, configManager.getNoPermMsg());
-            }
-            return searchBackupCommand(sender, isEnderChest, args);
+            // /pman inventory searchbackup <player>
+            case "searchbackup":
+                if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
+                    return Commands.errorOccurred(sender, configManager.getNoPermMsg());
+                }
+                return searchBackupCommand(sender, isEnderChest, args);
 
 
-        // /pman inventory showbackup <player> [year] [month] [day] [hour] [minute]
-        // [second]
-        case "showbackup":
-            if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
-                return Commands.errorOccurred(sender, configManager.getNoPermMsg());
-            }
-            return showBackupCommand(sender, isEnderChest, args);
+            // /pman inventory showbackup <player> [year] [month] [day] [hour] [minute]
+            // [second]
+            case "showbackup":
+                if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
+                    return Commands.errorOccurred(sender, configManager.getNoPermMsg());
+                }
+                return showBackupCommand(sender, isEnderChest, args);
 
-        // rollback player's inventory from speficied backup.
-        case "rollback":
-            if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
-                return Commands.errorOccurred(sender, configManager.getNoPermMsg());
-            }
-            return rollbackCommand(sender, isEnderChest, args);
+            // rollback player's inventory from speficied backup.
+            case "rollback":
+                if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
+                    return Commands.errorOccurred(sender, configManager.getNoPermMsg());
+                }
+                return rollbackCommand(sender, isEnderChest, args);
 
-        // create backup file.
-        case "backup":
-            if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
-                return Commands.errorOccurred(sender, configManager.getNoPermMsg());
-            }
-            return backupCommand(sender, isEnderChest, args);
+            // create backup file.
+            case "backup":
+                if (!Commands.hasPermission(sender, "playermanager." + type + "." + subInventoryCommand)) {
+                    return Commands.errorOccurred(sender, configManager.getNoPermMsg());
+                }
+                return backupCommand(sender, isEnderChest, args);
         }
 
         return Commands.errorOccurred(sender, configManager.getInvalidArgMsg());
