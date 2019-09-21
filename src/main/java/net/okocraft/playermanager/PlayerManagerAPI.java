@@ -1,17 +1,16 @@
 package net.okocraft.playermanager;
 
+import lombok.NonNull;
+import net.okocraft.playermanager.database.PlayerTable;
+import net.okocraft.playermanager.utilities.InventoryUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-
-import lombok.NonNull;
-import net.okocraft.playermanager.database.PlayerTable;
-import net.okocraft.playermanager.utilities.InventoryUtil;
 
 class PlayerManagerAPI {
 
@@ -57,7 +56,7 @@ class PlayerManagerAPI {
                 "uuid", "address", getAddress(player)));
         if (ignoreAuthorized) {
             Set<String> ignored = table.getAuthorizedAlts(player.getUniqueId().toString());
-            alts.removeAll(ignored);    
+            alts.removeAll(ignored);
         }
         return alts.stream().map(uuidStr -> Bukkit.getOfflinePlayer(UUID.fromString(uuidStr)))
                 .collect(Collectors.toSet());
