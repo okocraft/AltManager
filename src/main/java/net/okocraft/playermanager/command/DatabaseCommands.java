@@ -57,9 +57,13 @@ class DatabaseCommands {
 
             String uuid = player.getUniqueId().toString();
             String name = player.getName();
-            playerTable.addPlayer(uuid, name, true);
-            sender.sendMessage(configManager.getDatabaseAddPlayerSuccessMsg().replaceAll("%uuid%", uuid)
-                    .replaceAll("%player%", name));
+            if (name != null) {
+                playerTable.addPlayer(uuid, name, true);
+                sender.sendMessage(configManager.getDatabaseAddPlayerSuccessMsg().replaceAll("%uuid%", uuid)
+                        .replaceAll("%player%", name));
+            } else {
+                sender.sendMessage("&c* プレイヤーの名前を取得できませんでした。");
+            }
             return true;
         }
         if (subDatabaseCommand.equalsIgnoreCase("removeplayer")) {
