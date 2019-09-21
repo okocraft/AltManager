@@ -9,16 +9,15 @@ import net.okocraft.playermanager.listener.PreLogin;
 import net.okocraft.playermanager.tasks.InventoryBackupTask;
 import net.okocraft.playermanager.utilities.ConfigManager;
 import net.okocraft.playermanager.utilities.InventoryUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Logger;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author OKOCRAFT
