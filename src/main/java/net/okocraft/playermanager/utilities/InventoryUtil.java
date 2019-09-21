@@ -1,10 +1,18 @@
 package net.okocraft.playermanager.utilities;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import lombok.Getter;
+import net.okocraft.playermanager.PlayerManager;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -21,19 +29,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
-
-import lombok.Getter;
-import net.okocraft.playermanager.PlayerManager;
-
+// TODO: invFolderPath.toFile().list() の null 可能性をどうにかする
 public class InventoryUtil {
 
     private static final File dataFolder = PlayerManager.getInstance().getDataFolder();
@@ -43,20 +39,20 @@ public class InventoryUtil {
 
     /**
      * A method to serialize an inventory to Base64 string.
-     * 
-     * <p />
-     * 
+     * <p>
+     * <p/>
+     * <p>
      * Special thanks to Comphenix in the Bukkit forums or also known as aadnk on
      * GitHub.
-     * 
+     *
      * <a href="https://gist.github.com/aadnk/8138186">Original Source</a>
-     * 
+     *
      * @param inventory to serialize
      * @return Base64 string of the provided inventory
      */
     private static String toBase64(Inventory inventory) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
+             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream)) {
 
             // Write the size of the inventory
             dataOutput.writeInt(inventory.getSize());
@@ -72,22 +68,21 @@ public class InventoryUtil {
     }
 
     /**
-     * 
      * A method to get an {@link Inventory} from an encoded, Base64, string.
-     * 
-     * <p />
-     * 
+     * <p>
+     * <p/>
+     * <p>
      * Special thanks to Comphenix in the Bukkit forums or also known as aadnk on
      * GitHub.
-     * 
+     *
      * <a href="https://gist.github.com/aadnk/8138186">Original Source</a>
-     * 
+     *
      * @param data Base64 string of data containing an inventory.
      * @return Inventory created from the Base64 string.
      */
     public static Inventory fromBase64(String data) {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(data));
-                BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
+             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream)) {
             int originalInventorySize = dataInput.readInt();
             int inventorySize = originalInventorySize % 9 == 0 ? originalInventorySize : ((originalInventorySize / 9) + 1) * 9;
             Inventory inventory = Bukkit.getServer().createInventory(null, inventorySize, "Inventory Backup");
@@ -106,8 +101,8 @@ public class InventoryUtil {
     /**
      * Backup inventory of the {@code player} in
      * /basedir/(inventory|enderchest)/year/month/day/player-uuid.log
-     * 
-     * @param player プレイヤー
+     *
+     * @param player       プレイヤー
      * @param isEnderChest エンダーチェストかどうか
      */
     public static void backupInventory(Player player, boolean isEnderChest) {
@@ -134,13 +129,13 @@ public class InventoryUtil {
     }
 
     public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour,
-            int minute, int second) {
+                                    int minute, int second) {
         Optional<File> backupFile = getBackupFile(player, isEnderChest, year, month, day, hour, minute, second);
         return backupFile.map(file -> fromBackup(file.toPath())).orElse("");
     }
 
     public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour,
-            int minute) {
+                                    int minute) {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
@@ -156,7 +151,7 @@ public class InventoryUtil {
     }
 
     public static String fromBackup(OfflinePlayer player, boolean isEnderChest, int year, int month, int day,
-            int hour) {
+                                    int hour) {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
@@ -263,7 +258,7 @@ public class InventoryUtil {
     }
 
     public static Optional<File> getBackupFile(OfflinePlayer player, boolean isEnderChest, int year, int month, int day,
-            int hour, int minute, int second) {
+                                               int hour, int minute, int second) {
         String specifiedTime = year + "-" + String.format("%02d", month) + "-" + String.format("%02d", day) + "_"
                 + String.format("%02d", hour) + ":" + String.format("%02d", minute) + ":"
                 + String.format("%02d", second);
@@ -281,16 +276,16 @@ public class InventoryUtil {
                 .filter(fileName -> fileName.matches("^\\d{4}(-\\d{2}){2}_.*$"))
                 .map(fileName -> LocalDateTime.parse(fileName, format)).filter(date -> date.compareTo(today) < 0)
                 .map(date -> date.format(format)).forEach(fileName -> {
-                    Path sourcePath = invBackupFolderPath.resolve(fileName);
-                    Path targetPath = invBackupFolderPath
-                            .resolve(fileName.replaceAll("^(\\d{4}(-\\d{2}){2})_.*$", "$1")).resolve(fileName);
-                    try {
-                        Files.createDirectories(targetPath.getParent());
-                        Files.move(sourcePath, targetPath);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+            Path sourcePath = invBackupFolderPath.resolve(fileName);
+            Path targetPath = invBackupFolderPath
+                    .resolve(fileName.replaceAll("^(\\d{4}(-\\d{2}){2})_.*$", "$1")).resolve(fileName);
+            try {
+                Files.createDirectories(targetPath.getParent());
+                Files.move(sourcePath, targetPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static void packMonthBackups(boolean isEnderChest) {
@@ -302,16 +297,16 @@ public class InventoryUtil {
                 .filter(fileName -> fileName.matches("^\\d{4}(-\\d{2}){2}$"))
                 .map(fileName -> LocalDate.parse(fileName, monthFormat)).filter(date -> date.compareTo(thisMonth) < 0)
                 .map(date -> date.format(monthFormat)).forEach(fileName -> {
-                    Path sourcePath = invBackupFolderPath.resolve(fileName);
-                    Path targetPath = invBackupFolderPath.resolve(fileName.replaceAll("^(\\d{4}-\\d{2})-\\d{2}$", "$1"))
-                            .resolve(fileName);
-                    try {
-                        Files.createDirectories(targetPath.getParent());
-                        Files.move(sourcePath, targetPath);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+            Path sourcePath = invBackupFolderPath.resolve(fileName);
+            Path targetPath = invBackupFolderPath.resolve(fileName.replaceAll("^(\\d{4}-\\d{2})-\\d{2}$", "$1"))
+                    .resolve(fileName);
+            try {
+                Files.createDirectories(targetPath.getParent());
+                Files.move(sourcePath, targetPath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static void packYearBackups(boolean isEnderChest) {
@@ -336,7 +331,7 @@ public class InventoryUtil {
 
     /**
      * {@code file} 自身およびその配下にあるファイルのうちで、名前が{@code targetName}にマッチするものを検索する。
-     * 
+     *
      * @param file       検索するファイル
      * @param targetName 名前 正規表現を使用可能。
      * @return ヒットしたファイルパスのリスト
@@ -403,7 +398,7 @@ public class InventoryUtil {
     }
 
     public static List<String> getBackupSecond(OfflinePlayer player, boolean isEnderChest, int year, int month, int day, int hour,
-            int minute) {
+                                               int minute) {
         String type = isEnderChest ? "enderchest" : "inventory";
         return searchFile(dataFolder.toPath().resolve(type).toFile(), player.getUniqueId().toString() + ".log")
                 .parallelStream().map(path -> path.getParent().toFile().getName())
