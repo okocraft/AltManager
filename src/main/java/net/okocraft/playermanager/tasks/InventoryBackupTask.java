@@ -15,7 +15,7 @@ public class InventoryBackupTask extends BukkitRunnable {
             @Override
             public void run() {
 
-                Bukkit.getOnlinePlayers().stream().forEach(player -> {
+                Bukkit.getOnlinePlayers().forEach(player -> {
                     InventoryUtil.backupInventory(player, false);
                     InventoryUtil.backupInventory(player, true);
                 });
