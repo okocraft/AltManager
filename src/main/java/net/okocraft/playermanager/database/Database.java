@@ -157,7 +157,7 @@ public class Database {
         log.info("Database reset complete.");
     }
 
-    public boolean createTable(String table, String... columns) {
+    boolean createTable(String table, String... columns) {
         StringBuilder sb = new StringBuilder();
         for (String column : columns) {
             sb.append(column).append(", ");
@@ -293,7 +293,7 @@ public class Database {
      *
      * @return 成功すればtrue 失敗すればfalse
      */
-    public boolean remove(String table, String indexColumn, String indexKey) {
+    boolean remove(String table, String indexColumn, String indexKey) {
 
         if (!getTableMap().containsKey(table)) {
             log.warning(":NO_TABLE_NAMED_" + table + "_EXIST");
@@ -605,7 +605,7 @@ public class Database {
      *
      * @return カラムと値のマップ
      */
-    public Map<String, String> getMultiValue(String table, List<String> columns, String primaryKey) {
+    Map<String, String> getMultiValue(String table, List<String> columns, String primaryKey) {
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
         if (!getTableMap().containsKey(table)) {
             log.warning(":NO_TABLE_NAMED_" + table + "_EXIST");
@@ -795,7 +795,7 @@ public class Database {
      *
      * @return SQL 準備文
      */
-    public Optional<PreparedStatement> prepare(@NonNull String sql) {
+    Optional<PreparedStatement> prepare(@NonNull String sql) {
         if (connection.isPresent()) {
             try {
                 return Optional.of(connection.get().prepareStatement(sql));
