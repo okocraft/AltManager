@@ -149,9 +149,8 @@ public class PlayerTable {
      * @author akaregi
      * @since 1.0.0-SNAPSHOT
      *
-     * @param table
-     * @param column
-     * @param primaryKey
+     * @param column カラム
+     * @param entry エントリー
      * @return 値
      */
     public String getPlayerData(String column, String entry) {

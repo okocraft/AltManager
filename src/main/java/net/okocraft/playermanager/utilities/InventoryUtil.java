@@ -107,8 +107,8 @@ public class InventoryUtil {
      * Backup inventory of the {@code player} in
      * /basedir/(inventory|enderchest)/year/month/day/player-uuid.log
      * 
-     * @param player
-     * @param isEnderChest
+     * @param player プレイヤー
+     * @param isEnderChest エンダーチェストかどうか
      */
     public static void backupInventory(Player player, boolean isEnderChest) {
         LocalDateTime time = LocalDateTime.now(ZoneId.systemDefault());

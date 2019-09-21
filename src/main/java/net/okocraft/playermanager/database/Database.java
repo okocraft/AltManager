@@ -220,9 +220,8 @@ public class Database {
      * @since 1.0.0-SNAPSHOT
      * @author akaregi
      *
-     * @param uuid        UUID
-     * @param name        名前
-     * @param showWarning コンソールログを出力するかどうか
+     * @param table テーブルの名前
+     * @param defaultValue 追加する値
      *
      * @return 成功すればtrue 失敗すればfalse
      */
@@ -265,9 +264,8 @@ public class Database {
      * @since 1.0.0-SNAPSHOT
      * @author akaregi
      *
-     * @param uuid        UUID
-     * @param name        名前
-     * @param showWarning コンソールログを出力するかどうか
+     * @param table テーブルの名前
+     * @param primaryKey 追加するプレイマリーキー
      *
      * @return 成功すればtrue 失敗すればfalse
      */
@@ -289,7 +287,9 @@ public class Database {
      * @since 1.0.0-SNAPSHOT
      * @author LazyGon
      *
-     * @param entry プレイヤー
+     * @param table データを削除するテーブルの名前
+     * @param indexColumn 削除するカラムのインデックス
+     * @param indexKey 削除するカラムのキー
      *
      * @return 成功すればtrue 失敗すればfalse
      */
@@ -326,7 +326,8 @@ public class Database {
      * @since 1.0.0-SNAPSHOT
      * @author LazyGon
      *
-     * @param entry プレイヤー
+     * @param table 削除するレコードのテーブル名
+     * @param primaryKey 削除するレコードのプライマリーキー
      *
      * @return 成功すればtrue 失敗すればfalse
      */
@@ -341,9 +342,10 @@ public class Database {
      * @since 1.0.0-SNAPSHOT
      * @author LazyGon
      *
+     * @param table 値をセットするテーブル名
      * @param column 更新する列
-     * @param entry  プレイヤー。uuidでもmcidでも可
      * @param value  新しい値
+     * @param primaryKey 値をセットするプレイマリーキー
      */
     public boolean set(String table, String column, String value, String primaryKey) {
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
@@ -357,9 +359,11 @@ public class Database {
      * @since 1.0.0-SNAPSHOT
      * @author LazyGon
      *
+     * @param table 値をセットするテーブル名
      * @param column 更新する列
-     * @param entry  プレイヤー。uuidでもmcidでも可
      * @param value  新しい値
+     * @param indexColumn indexColumn
+     * @param indexKey indexKey
      * 
      * @return 成功したらtrue 失敗したらfalse
      */
@@ -398,9 +402,10 @@ public class Database {
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
      *
-     * @param table
-     * @param column
-     * @param primaryKey
+     * @param table テーブル名
+     * @param column 取得するカラム
+     * @param primaryKey プライマリーキー
+     *
      * @return 値
      */
     public String get(String table, String column, String primaryKey) {
@@ -415,12 +420,14 @@ public class Database {
      * @author akaregi
      * @since 1.0.0-SNAPSHOT
      *
-     * @param table
-     * @param column
-     * @param primaryKey
+     * @param table テーブル名
+     * @param column カラム名
+     * @param indexColumn 取得するカラム
+     * @param indexKey 取得するキー
      * 
      * @return 値
      */
+
     public List<String> get(String table, String column, String indexColumn, String indexKey) {
 
         if (!getTableMap().containsKey(table)) {

@@ -70,7 +70,7 @@ public class Commands implements CommandExecutor {
      * If entry is form of UUID, this returns string "uuid". Otherwise, this returns
      * string "player".
      * 
-     * @param entry
+     * @param entry エントリー
      * @return "uuid" or "player"
      */
     public static String checkEntryType(String entry) {
