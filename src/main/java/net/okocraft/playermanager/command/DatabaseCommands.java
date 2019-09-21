@@ -1,21 +1,20 @@
 package net.okocraft.playermanager.command;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-
 import net.okocraft.playermanager.PlayerManager;
 import net.okocraft.playermanager.database.Database;
 import net.okocraft.playermanager.database.PlayerTable;
 import net.okocraft.playermanager.utilities.ConfigManager;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
 
 class DatabaseCommands {
-    
+
     private static final PlayerManager instance = PlayerManager.getInstance();
     private static final ConfigManager configManager = instance.getConfigManager();
     private static final Database database = instance.getDatabase();
     private static final PlayerTable playerTable = database.getPlayerTable();
-    
+
     static boolean databaseCommands(CommandSender sender, String[] args) {
         if (args.length == 1) {
             return Commands.errorOccurred(sender, configManager.getNoEnoughArgMsg());
