@@ -29,15 +29,12 @@ public class PlayerManager extends JavaPlugin {
     @Getter
     private final Logger log;
     @Getter
-    private final String version;
-    @Getter
     private final Database database;
     @Getter
     private ConfigManager configManager;
 
     public PlayerManager() {
         log = getLogger();
-        version = getClass().getPackage().getImplementationVersion();
         database = new Database(this);
     }
 
@@ -61,7 +58,6 @@ public class PlayerManager extends JavaPlugin {
             if (!Files.exists(temp) || !Files.isDirectory(temp)) {
                 Files.createDirectory(temp);
             }
-            temp = null;
         } catch (IOException e) {
             e.printStackTrace();
         }
