@@ -227,7 +227,6 @@ public class ConfigManager {
         temp.saveDefaultConfig();
         temp = new CustomConfig(instance, "languages/en.yml");
         temp.saveDefaultConfig();
-        temp = null;
     }
 
     public void reloadConfig() {
