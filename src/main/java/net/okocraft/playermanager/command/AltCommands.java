@@ -119,7 +119,7 @@ class AltCommands {
         alts.forEach(playerUuid -> {
             String playerName = Bukkit.getOfflinePlayer(UUID.fromString(playerUuid)).getName();
             if (!playerName.equals(args[2])) {
-                sb.append(playerName + ", ");
+                sb.append(playerName).append(", ");
             }
         });
         sender.sendMessage(configManager.getShowAltsOnJoinMsg().replaceAll("%player%", args[2]).replaceAll("%alts%",
@@ -155,13 +155,13 @@ class AltCommands {
                 }
             });
             if (authorizedAlts.isEmpty()) {
-                sb.append(ChatColor.GREEN + ip + "\n");
+                sb.append(ChatColor.GREEN).append(ip).append("\n");
                 alts.forEach(playerUuid -> {
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(playerUuid));
                     if (offlinePlayer.isOnline()) {
-                        sb.append(ChatColor.AQUA + offlinePlayer.getName() + ChatColor.GRAY + ", ");
+                        sb.append(ChatColor.AQUA).append(offlinePlayer.getName()).append(ChatColor.GRAY).append(", ");
                     } else {
-                        sb.append(ChatColor.GRAY + offlinePlayer.getName() + ChatColor.GRAY + ", ");
+                        sb.append(ChatColor.GRAY).append(offlinePlayer.getName()).append(ChatColor.GRAY).append(", ");
                     }
                 });
                 sb.delete(sb.length() - 2, sb.length());
@@ -169,19 +169,19 @@ class AltCommands {
 
             } else {
                 authorizedAlts.forEach(playerUuid -> {
-                    sb.append(ChatColor.GREEN + ip + "\n");
+                    sb.append(ChatColor.GREEN).append(ip).append("\n");
                     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(playerUuid));
                     if (offlinePlayer.isOnline()) {
-                        sb.append(ChatColor.AQUA + offlinePlayer.getName() + ChatColor.GRAY + ", ");
+                        sb.append(ChatColor.AQUA).append(offlinePlayer.getName()).append(ChatColor.GRAY).append(", ");
                     } else {
-                        sb.append(ChatColor.GRAY + offlinePlayer.getName() + ChatColor.GRAY + ", ");
+                        sb.append(ChatColor.GRAY).append(offlinePlayer.getName()).append(ChatColor.GRAY).append(", ");
                     }
                     alts.forEach(altPlayerUuid -> {
                         OfflinePlayer offlinePlayerAlt = Bukkit.getOfflinePlayer(UUID.fromString(altPlayerUuid));
                         if (offlinePlayerAlt.isOnline()) {
-                            sb.append(ChatColor.AQUA + offlinePlayerAlt.getName() + ChatColor.GRAY + ", ");
+                            sb.append(ChatColor.AQUA).append(offlinePlayerAlt.getName()).append(ChatColor.GRAY).append(", ");
                         } else {
-                            sb.append(ChatColor.GRAY + offlinePlayerAlt.getName() + ChatColor.GRAY + ", ");
+                            sb.append(ChatColor.GRAY).append(offlinePlayerAlt.getName()).append(ChatColor.GRAY).append(", ");
                         }
                     });
                     sb.delete(sb.length() - 2, sb.length());
@@ -211,7 +211,7 @@ class AltCommands {
         StringBuilder sb = new StringBuilder();
         authorizedAlts.forEach(authorizedAltUuid -> {
             String authorizedAlt = Bukkit.getOfflinePlayer(UUID.fromString(authorizedAltUuid)).getName();
-            sb.append(ChatColor.AQUA + authorizedAlt + ChatColor.GRAY + ", ");
+            sb.append(ChatColor.AQUA).append(authorizedAlt).append(ChatColor.GRAY).append(", ");
         });
         sender.sendMessage(sb.substring(0, sb.length() - 4));
         return true;

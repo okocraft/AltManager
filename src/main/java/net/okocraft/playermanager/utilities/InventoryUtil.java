@@ -243,7 +243,7 @@ public class InventoryUtil {
                 if (lines.size() == lines.indexOf(line) + 1)
                     sb.append(line);
                 else
-                    sb.append(line + "\n");
+                    sb.append(line).append("\n");
             }
 
         } catch (NoSuchFileException exception) {

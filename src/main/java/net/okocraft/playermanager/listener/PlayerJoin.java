@@ -80,7 +80,7 @@ public class PlayerJoin implements Listener {
 
             accounts.forEach(alt -> {
                 if (!alt.equalsIgnoreCase(joinedPlayerName)) {
-                    sb.append(alt + ", ");
+                    sb.append(alt).append(", ");
                 }
             });
 

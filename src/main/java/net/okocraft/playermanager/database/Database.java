@@ -160,7 +160,7 @@ public class Database {
     public boolean createTable(String table, String... columns) {
         StringBuilder sb = new StringBuilder();
         for (String column : columns) {
-            sb.append(column + ", ");
+            sb.append(column).append(", ");
         }
         val statement = prepare(
                 "CREATE TABLE IF NOT EXISTS " + table + " (" + sb.substring(0, sb.length() - 2) + ")");
@@ -244,8 +244,8 @@ public class Database {
         StringBuilder sb2 = new StringBuilder();
 
         defaultValue.forEach((k, v) -> {
-            sb1.append("'" + k + "'" + ", ");
-            sb2.append("'" + v + "'" + ", ");
+            sb1.append("'").append(k).append("'").append(", ");
+            sb2.append("'").append(v).append("'").append(", ");
         });
 
         return prepare("INSERT OR IGNORE INTO " + table + " (" + sb1.substring(0, sb1.length() - 2)
@@ -519,8 +519,8 @@ public class Database {
 
         columnMap.forEach((colName, colType) -> {
             if (!column.equals(colName)) {
-                columnsBuilder.append(colName + " " + colType + ", ");
-                colmunsBuilderExcludeType.append(colName + ", ");
+                columnsBuilder.append(colName).append(" ").append(colType).append(", ");
+                colmunsBuilderExcludeType.append(colName).append(", ");
             }
         });
         String columns = columnsBuilder.toString().replaceAll(", $", "");
@@ -567,7 +567,7 @@ public class Database {
 
         StringBuilder sb = new StringBuilder();
         for (String columnName : columns)
-            sb.append(columnName + ", ");
+            sb.append(columnName).append(", ");
 
         String multipleColumnName = sb.substring(0, sb.length() - 2);
 
@@ -609,7 +609,7 @@ public class Database {
 
         StringBuilder sb = new StringBuilder();
         for (String columnName : columns)
-            sb.append(columnName + ", ");
+            sb.append(columnName).append(", ");
 
         String multipleColumnName = sb.substring(0, sb.length() - 2);
 
@@ -650,7 +650,7 @@ public class Database {
 
         StringBuilder sb = new StringBuilder();
         columnValueMap.forEach((columnName, columnValue) -> {
-            sb.append(columnName + " = '" + columnValue + "', ");
+            sb.append(columnName).append(" = '").append(columnValue).append("', ");
         });
 
         val statement = prepare(
