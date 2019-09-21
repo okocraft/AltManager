@@ -1,148 +1,212 @@
 package net.okocraft.playermanager.utilities;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.List;
-import java.util.Optional;
-
+import lombok.Getter;
+import net.okocraft.playermanager.PlayerManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import lombok.Getter;
-import net.okocraft.playermanager.PlayerManager;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
+import java.util.Optional;
 
 public class ConfigManager {
 
-    /** PLugin instance */
+    /**
+     * PLugin instance
+     */
     private static PlayerManager instance;
 
     @Getter
     private FileConfiguration defaultConfig;
 
-    /** language file. ex. 'ja.yml', 'en.yml'... */
+    /**
+     * language file. ex. 'ja.yml', 'en.yml'...
+     */
     private String languageFile;
 
-    /** Language Custom Config Instance */
+    /**
+     * Language Custom Config Instance
+     */
     private final CustomConfig languageCustomConfig;
 
-    /** Language FileConfiguration */
+    /**
+     * Language FileConfiguration
+     */
     @Getter
     private FileConfiguration languageConfig;
 
-    /** Whether Name change logging is enabled. */
+    /**
+     * Whether Name change logging is enabled.
+     */
     @Getter
     private boolean loggingEnabled;
 
-    /** Whether Name change notification is enabled. */
+    /**
+     * Whether Name change notification is enabled.
+     */
     @Getter
     private boolean notificationEnabled;
 
-    /** Whether command execution is enabled. */
+    /**
+     * Whether command execution is enabled.
+     */
     @Getter
     private boolean commandExecutionEnabled;
 
-    /** Command List which will be executed on Change of Name. */
+    /**
+     * Command List which will be executed on Change of Name.
+     */
     @Getter
     private List<String> commandList;
 
-    /** Whether score migration is enabled. */
+    /**
+     * Whether score migration is enabled.
+     */
     @Getter
     private boolean scoreMigrationEnabled;
 
-    /** On score migration, whether score of old name should be reset. */
+    /**
+     * On score migration, whether score of old name should be reset.
+     */
     @Getter
     private boolean oldScoreResetEnabled;
 
-    /** Should plugin notify previous name for the player on join. */
+    /**
+     * Should plugin notify previous name for the player on join.
+     */
     @Getter
     private boolean notifyPreviousNameEnabled;
 
-    /** How long the plugin broadcast his previous name on join. In day. */
+    /**
+     * How long the plugin broadcast his previous name on join. In day.
+     */
     @Getter
     private int notifyPreviousNameTerm;
 
-    /** Interval of inventory backup. */
+    /**
+     * Interval of inventory backup.
+     */
     @Getter
     private int invBackupInterval;
 
-    /** How many alt accounts allowed. */
+    /**
+     * How many alt accounts allowed.
+     */
     @Getter
     private int maxAccounts;
 
-    /** Message on permission denied. */
+    /**
+     * Message on permission denied.
+     */
     @Getter
     private String noPermMsg;
 
-    /** Message on invalid argument. */
+    /**
+     * Message on invalid argument.
+     */
     @Getter
     private String invalidArgMsg;
 
-    /** Message on specifying no enough arguments. */
+    /**
+     * Message on specifying no enough arguments.
+     */
     @Getter
     private String noEnoughArgMsg;
 
-    /** Message on name change notification. */
+    /**
+     * Message on name change notification.
+     */
     @Getter
     private String nameChangeMsg;
 
-    /** Message when no player is found. */
+    /**
+     * Message when no player is found.
+     */
     @Getter
     private String noPlayerFoundMsg;
 
-    /** Message when sender should. */
+    /**
+     * Message when sender should.
+     */
     @Getter
     private String senderMustBePlayerMsg;
 
-    /** Page footer format. */
+    /**
+     * Page footer format.
+     */
     @Getter
     private String pageFooter;
 
-    /** Message on invalid command. */
+    /**
+     * Message on invalid command.
+     */
     @Getter
     private String commandNotExistMsg;
 
-    /** Message on executed inventory backup successfully. */
+    /**
+     * Message on executed inventory backup successfully.
+     */
     @Getter
     private String inventoryBackupSuccessMsg;
 
-    /** Message on addPlayer success. */
+    /**
+     * Message on addPlayer success.
+     */
     @Getter
     private String databaseAddPlayerSuccessMsg;
 
-    /** Message on removePlayer success. */
+    /**
+     * Message on removePlayer success.
+     */
     @Getter
     private String databaseRemovePlayerSuccessMsg;
 
-    /** Message on no column is found. */
+    /**
+     * Message on no column is found.
+     */
     @Getter
     private String databaseNoColumnFoundMsg;
 
-    /** Message on serValue success. */
+    /**
+     * Message on serValue success.
+     */
     @Getter
     private String databaseSetValueSuccessMsg;
 
-    /** Message on speficying invalid backup file */
+    /**
+     * Message on speficying invalid backup file
+     */
     @Getter
     private String invalidBackupFileMsg;
 
-    /** Message on joining player who renamed before. */
+    /**
+     * Message on joining player who renamed before.
+     */
     @Getter
     private String notifyPreviousNameMsg;
 
-    /** Message on joining player owning alt account. */
+    /**
+     * Message on joining player owning alt account.
+     */
     @Getter
     private String showAltsOnJoinMsg;
 
-    /** Message on autholizing 2 account having same ip as non alt account. */
+    /**
+     * Message on autholizing 2 account having same ip as non alt account.
+     */
     @Getter
     private String altAuthorizeMsg;
 
-    /** Message on autholizing 2 account having same ip as non alt account. */
+    /**
+     * Message on autholizing 2 account having same ip as non alt account.
+     */
     @Getter
     private String altUnauthorizeMsg;
 
-    /** Message on autholizing failure because of different ip. */
+    /**
+     * Message on autholizing failure because of different ip.
+     */
     @Getter
     private String playerDifferentIpMsg;
 
@@ -219,8 +283,7 @@ public class ConfigManager {
             }
             InputStream resource = instance.getResource("languages/" + languageFile);
             if (resource != null) {
-                Reader reader = new InputStreamReader(resource);
-                YamlConfiguration jarConfig = YamlConfiguration.loadConfiguration(reader);
+                YamlConfiguration jarConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(resource));
                 result = Optional.ofNullable(jarConfig.getString(path, "&cError has occured on loading locale."));
             }
         }
