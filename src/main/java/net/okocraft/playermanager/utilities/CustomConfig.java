@@ -17,22 +17,18 @@ class CustomConfig {
     private final String file;
     private final Plugin plugin;
 
-    public CustomConfig(Plugin plugin) {
-        this(plugin, "config.yml");
-    }
-
-    public CustomConfig(Plugin plugin, String fileName) {
+    CustomConfig(Plugin plugin, String fileName) {
         this.plugin = plugin;
         this.file = fileName;
         configFile = new File(plugin.getDataFolder(), file);
     }
 
-    public void saveDefaultConfig() {
+    void saveDefaultConfig() {
         if (!configFile.exists())
             plugin.saveResource(file, false);
     }
 
-    public FileConfiguration getConfig() {
+    FileConfiguration getConfig() {
         if (config == null)
             reloadConfig();
         return config;
@@ -48,7 +44,7 @@ class CustomConfig {
         }
     }
 
-    public void reloadConfig() {
+    void reloadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
 
         final InputStream defConfigStream = plugin.getResource(file);
