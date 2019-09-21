@@ -341,15 +341,14 @@ public class Database {
      *
      * @since 1.0.0-SNAPSHOT
      * @author LazyGon
-     *
-     * @param table 値をセットするテーブル名
+     *@param table 値をセットするテーブル名
      * @param column 更新する列
      * @param value  新しい値
      * @param primaryKey 値をセットするプレイマリーキー
      */
-    public boolean set(String table, String column, String value, String primaryKey) {
+    public void set(String table, String column, String value, String primaryKey) {
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
-        return set(table, column, value, primaryKeyColumnName, primaryKey);
+        set(table, column, value, primaryKeyColumnName, primaryKey);
     }
 
     /**
@@ -364,22 +363,21 @@ public class Database {
      * @param value  新しい値
      * @param indexColumn indexColumn
      * @param indexKey indexKey
-     * 
-     * @return 成功したらtrue 失敗したらfalse
+     *
      */
-    public boolean set(String table, String column, String value, String indexColumn, String indexKey) {
+    public void set(String table, String column, String value, String indexColumn, String indexKey) {
 
         if (!getTableMap().containsKey(table)) {
             log.warning(":NO_TABLE_NAMED_" + table + "_EXIST");
-            return false;
+            return;
         }
 
         if (!getColumnMap(table).containsKey(column)) {
             log.warning(":NO_COLUMN_NAMED_" + column + "_EXIST");
-            return false;
+            return;
         }
 
-        return prepare("UPDATE " + table + " SET " + column + " = ? WHERE " + indexColumn + " = ?").map(statement -> {
+        prepare("UPDATE " + table + " SET " + column + " = ? WHERE " + indexColumn + " = ?").map(statement -> {
             try {
                 statement.setString(1, value);
                 statement.setString(2, indexKey);
@@ -392,7 +390,7 @@ public class Database {
                 e.printStackTrace();
                 return false;
             }
-        }).orElse(false);
+        });
     }
 
     /**
