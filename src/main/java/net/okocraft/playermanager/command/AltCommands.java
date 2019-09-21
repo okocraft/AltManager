@@ -123,7 +123,7 @@ public class AltCommands {
             }
         });
         sender.sendMessage(configManager.getShowAltsOnJoinMsg().replaceAll("%player%", args[2]).replaceAll("%alts%",
-                sb.substring(0, sb.length() - 2).toString()));
+                sb.substring(0, sb.length() - 2)));
         return true;
     }
 

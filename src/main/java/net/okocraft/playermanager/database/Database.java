@@ -163,7 +163,7 @@ public class Database {
             sb.append(column + ", ");
         }
         val statement = prepare(
-                "CREATE TABLE IF NOT EXISTS " + table + " (" + sb.substring(0, sb.length() - 2).toString() + ")");
+                "CREATE TABLE IF NOT EXISTS " + table + " (" + sb.substring(0, sb.length() - 2) + ")");
         return statement.map(resource -> {
             try (PreparedStatement stmt = resource) {
                 stmt.execute();
@@ -248,8 +248,8 @@ public class Database {
             sb2.append("'" + v + "'" + ", ");
         });
 
-        return prepare("INSERT OR IGNORE INTO " + table + " (" + sb1.substring(0, sb1.length() - 2).toString()
-                + ") VALUES (" + sb2.substring(0, sb2.length() - 2).toString() + ")").map(statement -> {
+        return prepare("INSERT OR IGNORE INTO " + table + " (" + sb1.substring(0, sb1.length() - 2)
+                + ") VALUES (" + sb2.substring(0, sb2.length() - 2) + ")").map(statement -> {
                     try {
                         return statement.execute();
                     } catch (SQLException e) {
@@ -573,7 +573,7 @@ public class Database {
         for (String columnName : columns)
             sb.append(columnName + ", ");
 
-        String multipleColumnName = sb.substring(0, sb.length() - 2).toString();
+        String multipleColumnName = sb.substring(0, sb.length() - 2);
 
         val statement = prepare("SELECT " + multipleColumnName + " FROM " + table + " WHERE " + indexColumn + " = ?");
 
@@ -615,7 +615,7 @@ public class Database {
         for (String columnName : columns)
             sb.append(columnName + ", ");
 
-        String multipleColumnName = sb.substring(0, sb.length() - 2).toString();
+        String multipleColumnName = sb.substring(0, sb.length() - 2);
 
         val statement = prepare(
                 "SELECT " + multipleColumnName + " FROM " + table + " WHERE " + primaryKeyColumnName + " = ?");

@@ -88,7 +88,7 @@ public class PlayerJoin implements Listener {
                     .filter(onlinePlayer -> onlinePlayer.hasPermission("playermanager.alt.search"))
                     .forEach(onlinePlayer -> onlinePlayer
                             .sendMessage(config.getShowAltsOnJoinMsg().replaceAll("%player%", joinedPlayerName)
-                                    .replaceAll("%alts%", sb.substring(0, sb.length() - 2).toString())));
+                                    .replaceAll("%alts%", sb.substring(0, sb.length() - 2))));
         }
 
         String renameLogOnDate = playerTable.getPlayerData("renamelogondate", Uuid);
