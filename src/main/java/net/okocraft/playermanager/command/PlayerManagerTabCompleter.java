@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.util.StringUtil;
 
@@ -28,7 +29,12 @@ class PlayerManagerTabCompleter implements TabCompleter {
         this.instance = PlayerManager.getInstance();
         this.database = database;
         this.playerTable = database.getPlayerTable();
-        this.instance.getCommand("playermanager").setTabCompleter(this);
+        PluginCommand command = instance.getCommand("playermanager");
+        if (command != null){
+            command.setTabCompleter(this);
+        } else {
+           instance.getLog().warning("/playermanager が null でした。タブ補完は使用できません。");
+        }
     }
 
     @Override
