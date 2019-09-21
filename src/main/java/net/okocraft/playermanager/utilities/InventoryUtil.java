@@ -152,7 +152,7 @@ public class InventoryUtil {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
-                .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
+                .resolve(Arrays.stream(invFolderPath.toFile().list())
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
                         .map(fileName -> LocalDateTime.parse(fileName, format)).filter(date -> date.getYear() == year)
                         .filter(date -> date.getMonthValue() == month).filter(date -> date.getDayOfMonth() == day)
@@ -168,7 +168,7 @@ public class InventoryUtil {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
-                .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
+                .resolve(Arrays.stream(invFolderPath.toFile().list())
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
                         .map(fileName -> LocalDateTime.parse(fileName, format)).filter(date -> date.getYear() == year)
                         .filter(date -> date.getMonthValue() == month).filter(date -> date.getDayOfMonth() == day)
@@ -183,7 +183,7 @@ public class InventoryUtil {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
-                .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
+                .resolve(Arrays.stream(invFolderPath.toFile().list())
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
                         .map(fileName -> LocalDateTime.parse(fileName, format)).filter(date -> date.getYear() == year)
                         .filter(date -> date.getMonthValue() == month).filter(date -> date.getDayOfMonth() == day)
@@ -197,7 +197,7 @@ public class InventoryUtil {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
-                .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
+                .resolve(Arrays.stream(invFolderPath.toFile().list())
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
                         .map(fileName -> LocalDateTime.parse(fileName, format)).filter(date -> date.getYear() == year)
                         .filter(date -> date.getMonthValue() == month)
@@ -211,7 +211,7 @@ public class InventoryUtil {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
-                .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
+                .resolve(Arrays.stream(invFolderPath.toFile().list())
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
                         .map(fileName -> LocalDateTime.parse(fileName, format)).filter(date -> date.getYear() == year)
                         .reduce(LocalDateTime.MIN, (x, y) -> x.compareTo(y) >= 0 ? x : y).format(format))
@@ -224,7 +224,7 @@ public class InventoryUtil {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invFolderPath = dataFolder.toPath().resolve(type);
         Path recentBackupPath = invFolderPath
-                .resolve(Arrays.asList(invFolderPath.toFile().list()).stream()
+                .resolve(Arrays.stream(invFolderPath.toFile().list())
                         .filter(fileName -> fileName.matches("(\\d){4}(-(\\d){2}){2}_(\\d{2}:){2}\\d{2}"))
                         .map(fileName -> LocalDateTime.parse(fileName, format))
                         .reduce(LocalDateTime.MIN, (x, y) -> x.compareTo(y) >= 0 ? x : y).format(format))
@@ -285,7 +285,7 @@ public class InventoryUtil {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invBackupFolderPath = dataFolder.toPath().resolve(type);
         LocalDateTime today = LocalDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);
-        Arrays.asList(invBackupFolderPath.toFile().list()).stream()
+        Arrays.stream(invBackupFolderPath.toFile().list())
                 .filter(fileName -> fileName.matches("^\\d{4}(-\\d{2}){2}_.*$"))
                 .map(fileName -> LocalDateTime.parse(fileName, format)).filter(date -> date.compareTo(today) < 0)
                 .map(date -> date.format(format)).forEach(fileName -> {
@@ -306,7 +306,7 @@ public class InventoryUtil {
         Path invBackupFolderPath = dataFolder.toPath().resolve(type);
         DateTimeFormatter monthFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd");
         LocalDate thisMonth = LocalDate.now(ZoneId.systemDefault()).withDayOfMonth(1);
-        Arrays.asList(invBackupFolderPath.toFile().list()).stream()
+        Arrays.stream(invBackupFolderPath.toFile().list())
                 .filter(fileName -> fileName.matches("^\\d{4}(-\\d{2}){2}$"))
                 .map(fileName -> LocalDate.parse(fileName, monthFormat)).filter(date -> date.compareTo(thisMonth) < 0)
                 .map(date -> date.format(monthFormat)).forEach(fileName -> {
@@ -326,7 +326,7 @@ public class InventoryUtil {
         String type = isEnderChest ? "enderchest" : "inventory";
         Path invBackupFolderPath = dataFolder.toPath().resolve(type);
         int thisYear = Year.now(ZoneId.systemDefault()).getValue();
-        Arrays.asList(invBackupFolderPath.toFile().list()).stream()
+        Arrays.stream(invBackupFolderPath.toFile().list())
                 .filter(fileName -> fileName.matches("^\\d{4}-\\d{2}$"))
                 .filter(fileName -> Integer.parseInt(fileName.replaceAll("^(\\d{4})-\\d{2}$", "$1")) < thisYear)
                 .forEach(fileName -> {
