@@ -134,7 +134,6 @@ public class InventoryUtil {
             fw.close();
         } catch (IOException exception) {
             exception.printStackTrace();
-            return;
         }
     }
 
