@@ -20,9 +20,9 @@ import net.okocraft.playermanager.utilities.InventoryUtil;
 
 class PlayerManagerTabCompleter implements TabCompleter {
 
-    private PlayerManager instance;
-    private Database database;
-    private PlayerTable playerTable;
+    private final PlayerManager instance;
+    private final Database database;
+    private final PlayerTable playerTable;
 
     public PlayerManagerTabCompleter(Database database) {
         this.instance = PlayerManager.getInstance();

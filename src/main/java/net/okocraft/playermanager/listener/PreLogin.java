@@ -16,7 +16,7 @@ import net.okocraft.playermanager.utilities.ConfigManager;
 
 public class PreLogin implements Listener {
 
-    private ConfigManager configManager;
+    private final ConfigManager configManager;
 
     public PreLogin(Plugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);

@@ -24,7 +24,7 @@ public class PlayerTable {
     private final Logger log;
     private final Database database;
     @Getter
-    private String playerTableName;
+    private final String playerTableName;
 
     PlayerTable(Database database) {
         log = PlayerManager.getInstance().getLog();

@@ -13,8 +13,8 @@ import net.okocraft.playermanager.database.Database;
 import net.okocraft.playermanager.utilities.ConfigManager;
 
 public class Commands implements CommandExecutor {
-    private PlayerManager instance;
-    private ConfigManager configManager;
+    private final PlayerManager instance;
+    private final ConfigManager configManager;
 
     public Commands(Plugin plugin, Database database) {
         this.instance = (PlayerManager) plugin;

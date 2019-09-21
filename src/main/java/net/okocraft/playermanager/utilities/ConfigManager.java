@@ -23,7 +23,7 @@ public class ConfigManager {
     private String languageFile;
 
     /** Language Custom Config Instance */
-    private CustomConfig languageCustomConfig;
+    private final CustomConfig languageCustomConfig;
 
     /** Language FileConfiguration */
     @Getter

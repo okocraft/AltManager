@@ -39,7 +39,7 @@ public class InventoryUtil {
     private static final File dataFolder = PlayerManager.getInstance().getDataFolder();
 
     @Getter
-    private static DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH:mm:ss");
+    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu-MM-dd_HH:mm:ss");
 
     /**
      * A method to serialize an inventory to Base64 string.
