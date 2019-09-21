@@ -1,40 +1,24 @@
 package net.okocraft.playermanager.database;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.val;
+import net.okocraft.playermanager.PlayerManager;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Optional;
-import java.util.Properties;
+import java.sql.*;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.val;
-
-import net.okocraft.playermanager.PlayerManager;
 
 public class Database {
     /**
@@ -93,8 +77,8 @@ public class Database {
      * <p>
      * データベースのファイル自体が存在しない場合はファイルを作成する。 ファイル内になんらデータベースが存在しない場合、データベースを新たに生成する。
      *
-     * @since 1.0.0-SNAPSHOT
      * @author akaregi
+     * @since 1.0.0-SNAPSHOT
      */
     public boolean connect(String url) {
         // Check if driver exists
@@ -179,11 +163,10 @@ public class Database {
 
     /**
      * テーブルを消す。
-     * 
+     *
+     * @param table 削除するテーブルの名前
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     * 
-     * @param table 削除するテーブルの名前
      */
     public void dropTable(String table) {
         val statement = prepare("DROP TABLE IF EXISTS " + table);
@@ -199,8 +182,8 @@ public class Database {
     /**
      * データベースへの接続を切断する。
      *
-     * @since 1.0.0-SNAPSHOT
      * @author akaregi
+     * @since 1.0.0-SNAPSHOT
      */
     public void dispose() {
         connection.ifPresent(connection -> {
@@ -217,13 +200,11 @@ public class Database {
     /**
      * 名前変更記録用テーブルにプレイヤーを追加する。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author akaregi
-     *
-     * @param table テーブルの名前
+     * @param table        テーブルの名前
      * @param defaultValue 追加する値
-     *
      * @return 成功すればtrue 失敗すればfalse
+     * @author akaregi
+     * @since 1.0.0-SNAPSHOT
      */
     public boolean insert(String table, Map<String, String> defaultValue) {
 
@@ -249,31 +230,30 @@ public class Database {
 
         return prepare("INSERT OR IGNORE INTO " + table + " (" + sb1.substring(0, sb1.length() - 2)
                 + ") VALUES (" + sb2.substring(0, sb2.length() - 2) + ")").map(statement -> {
-                    try {
-                        return statement.execute();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                }).orElse(false);
+            try {
+                return statement.execute();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return false;
+            }
+        }).orElse(false);
     }
 
     /**
      * プライマリーキーのみレコードを追加する。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author akaregi
-     *
-     * @param table テーブルの名前
+     * @param table      テーブルの名前
      * @param primaryKey 追加するプレイマリーキー
-     *
      * @return 成功すればtrue 失敗すればfalse
+     * @author akaregi
+     * @since 1.0.0-SNAPSHOT
      */
     public boolean insert(String table, String primaryKey) {
 
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
         return insert(table, new HashMap<String, String>() {
             private static final long serialVersionUID = 1L;
+
             {
                 put(primaryKeyColumnName, primaryKey);
             }
@@ -284,14 +264,12 @@ public class Database {
     /**
      * テーブルからプレイヤーを削除する。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author LazyGon
-     *
-     * @param table データを削除するテーブルの名前
+     * @param table       データを削除するテーブルの名前
      * @param indexColumn 削除するカラムのインデックス
-     * @param indexKey 削除するカラムのキー
-     *
+     * @param indexKey    削除するカラムのキー
      * @return 成功すればtrue 失敗すればfalse
+     * @author LazyGon
+     * @since 1.0.0-SNAPSHOT
      */
     boolean remove(String table, String indexColumn, String indexKey) {
 
@@ -323,13 +301,11 @@ public class Database {
     /**
      * テーブルからレコードを削除する。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author LazyGon
-     *
-     * @param table 削除するレコードのテーブル名
+     * @param table      削除するレコードのテーブル名
      * @param primaryKey 削除するレコードのプライマリーキー
-     *
      * @return 成功すればtrue 失敗すればfalse
+     * @author LazyGon
+     * @since 1.0.0-SNAPSHOT
      */
     public boolean remove(String table, String primaryKey) {
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
@@ -339,12 +315,12 @@ public class Database {
     /**
      * {@code table}の{@code column}に値をセットする。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author LazyGon
-     *@param table 値をセットするテーブル名
-     * @param column 更新する列
-     * @param value  新しい値
+     * @param table      値をセットするテーブル名
+     * @param column     更新する列
+     * @param value      新しい値
      * @param primaryKey 値をセットするプレイマリーキー
+     * @author LazyGon
+     * @since 1.0.0-SNAPSHOT
      */
     public void set(String table, String column, String value, String primaryKey) {
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
@@ -355,15 +331,13 @@ public class Database {
      * {@code table}の{@code column}に値をセットする。
      * indexColumnに複数の同じindexKeyが含まれる場合は全ての場所に値をセットする。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author LazyGon
-     *
-     * @param table 値をセットするテーブル名
-     * @param column 更新する列
-     * @param value  新しい値
+     * @param table       値をセットするテーブル名
+     * @param column      更新する列
+     * @param value       新しい値
      * @param indexColumn indexColumn
-     * @param indexKey indexKey
-     *
+     * @param indexKey    indexKey
+     * @author LazyGon
+     * @since 1.0.0-SNAPSHOT
      */
     public void set(String table, String column, String value, String indexColumn, String indexKey) {
 
@@ -397,14 +371,12 @@ public class Database {
      * {@code table} で指定したテーブルの {@code primaryKey} をインデックスとして列 {@code column}
      * の値を取得する。 テーブル、カラム、レコードのいずれかが存在しない場合は対応するエラー文字列を返す。
      *
+     * @param table      テーブル名
+     * @param column     取得するカラム
+     * @param primaryKey プライマリーキー
+     * @return 値
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     * @param table テーブル名
-     * @param column 取得するカラム
-     * @param primaryKey プライマリーキー
-     *
-     * @return 値
      */
     public String get(String table, String column, String primaryKey) {
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
@@ -415,15 +387,13 @@ public class Database {
      * {@code table} で指定したテーブルの {@code primaryKey} をインデックスとして列 {@code column}
      * の値を取得する。 テーブル、カラム、レコードのいずれかが存在しない場合は対応するエラー文字列を返す。 nullは弾く。
      *
+     * @param table       テーブル名
+     * @param column      カラム名
+     * @param indexColumn 取得するカラム
+     * @param indexKey    取得するキー
+     * @return 値
      * @author akaregi
      * @since 1.0.0-SNAPSHOT
-     *
-     * @param table テーブル名
-     * @param column カラム名
-     * @param indexColumn 取得するカラム
-     * @param indexKey 取得するキー
-     * 
-     * @return 値
      */
 
     public List<String> get(String table, String column, String indexColumn, String indexKey) {
@@ -464,14 +434,12 @@ public class Database {
     /**
      * テーブルに新しい列 {@code column} を追加する。
      *
-     * @author akaregi
-     * @since 1.0.0-SNAPSHOT
-     *
      * @param column       列の名前。
      * @param type         列の型。
      * @param defaultValue デフォルトの値。必要ない場合はnullを指定する。
      * @param showWarning  同じ列が存在したときにコンソールに警告を表示するかどうか
-     *
+     * @author akaregi
+     * @since 1.0.0-SNAPSHOT
      */
     public void addColumn(String table, String column, String type, String defaultValue, boolean showWarning) {
 
@@ -501,12 +469,10 @@ public class Database {
     /**
      * テーブル {@code table} から列 {@code column} を削除する。
      *
-     * @author akaregi
-     * @since 1.0.0-SNAPSHOT
-     *
      * @param table  削除する列があるテーブル
      * @param column 削除する列の名前。
-     *
+     * @author akaregi
+     * @since 1.0.0-SNAPSHOT
      */
     public void dropColumn(String table, String column) {
 
@@ -556,14 +522,12 @@ public class Database {
     /**
      * エントリーの複数のカラムの値を一気に取得する。 マップはLinkedHashMapで、引数のListの順番を引き継ぐ。
      *
+     * @return カラムと値のマップ
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     *
-     * @return カラムと値のマップ
      */
     public Multimap<String, String> getMultiValue(String table, List<String> columns, String indexColumn,
-            String indexKey) {
+                                                  String indexKey) {
 
         Multimap<String, String> resultMap = ArrayListMultimap.create();
 
@@ -601,11 +565,9 @@ public class Database {
     /**
      * エントリーの複数のカラムの値を一気に取得する。 マップはLinkedHashMapで、引数のListの順番を引き継ぐ。
      *
+     * @return カラムと値のマップ
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     *
-     * @return カラムと値のマップ
      */
     Map<String, String> getMultiValue(String table, List<String> columns, String primaryKey) {
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
@@ -646,11 +608,9 @@ public class Database {
     /**
      * エントリーの複数のカラムの値を一気に更新する
      *
+     * @return カラムと値のマップ
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     *
-     * @return カラムと値のマップ
      */
     boolean setMultiValue(String table, Map<String, String> columnValueMap, String indexKey,
                           String indexColumn) {
@@ -676,11 +636,9 @@ public class Database {
     /**
      * エントリーの複数のカラムの値を一気に更新する
      *
+     * @return カラムと値のマップ
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     *
-     * @return カラムと値のマップ
      */
     public boolean setMultiValue(String table, Map<String, String> columnValueMap, String primaryKey) {
         String primaryKeyColumnName = getPrimaryKeyColumnName(table);
@@ -690,11 +648,9 @@ public class Database {
     /**
      * テーブルに含まれる列 {@code column} のリストを取得する。
      *
+     * @return テーブルに含まれるcolumnの名前と型のマップ 失敗したら空のマップを返す。
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     *
-     * @return テーブルに含まれるcolumnの名前と型のマップ 失敗したら空のマップを返す。
      */
     public Map<String, String> getColumnMap(String table) {
 
@@ -740,10 +696,9 @@ public class Database {
     /**
      * すべてのテーブル名前と型のマップを取得する。
      *
+     * @return テーブル名と型のマップ
      * @author LazyGon
      * @since 1.0.0-SNAPSHOT
-     *
-     * @return テーブル名と型のマップ
      */
     public Map<String, String> getTableMap() {
 
@@ -751,7 +706,7 @@ public class Database {
 
         return connection.map(con -> {
             try {
-                ResultSet resultSet = con.getMetaData().getTables(null, null, null, new String[] { "TABLE" });
+                ResultSet resultSet = con.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
 
                 while (resultSet.next()) {
                     tableMap.put(resultSet.getString("TABLE_NAME"), resultSet.getString("TABLE_TYPE"));
@@ -768,12 +723,10 @@ public class Database {
     /**
      * スレッド上で SQL を実行する。
      *
+     * @param statement SQL 準備文。
+     * @return {@Code ResultSet}
      * @author akaregi
      * @since 1.0.0-SNAPSHOT
-     *
-     * @param statement SQL 準備文。
-     *
-     * @return {@Code ResultSet}
      */
     public Optional<ResultSet> exec(PreparedStatement statement) {
         val thread = threadPool.submit(new StatementCaller(statement));
@@ -790,12 +743,10 @@ public class Database {
     /**
      * SQL 準備文を構築する。
      *
+     * @param sql SQL 文。
+     * @return SQL 準備文
      * @author akaregi
      * @since 1.0.0-SNAPSHOT
-     *
-     * @param sql SQL 文。
-     *
-     * @return SQL 準備文
      */
     Optional<PreparedStatement> prepare(@NonNull String sql) {
         if (connection.isPresent()) {
@@ -814,15 +765,12 @@ public class Database {
     /**
      * Connection(String, Properties)} のラッパーメソッド。
      *
-     * @since 1.0.0-SNAPSHOT
-     * @author akaregi
-     *
-     * @see DriverManager#getConnection(String, Properties)
-     *
      * @param url   {@code jdbc:subprotocol:subname} という形式のデータベース URL
      * @param props データベースの取り扱いについてのプロパティ
-     *
      * @return 指定されたデータベースへの接続 {@code Connect} 。
+     * @author akaregi
+     * @see DriverManager#getConnection(String, Properties)
+     * @since 1.0.0-SNAPSHOT
      */
     private static Optional<Connection> getConnection(@NonNull String url, Properties props) {
         try {
