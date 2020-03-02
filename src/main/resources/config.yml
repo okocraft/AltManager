@@ -1,24 +1,26 @@
 #Language file. Any name can allowed but does not exist.
-LanguageFile: 'ja.yml'
+language-file: 'ja.yml'
 
 #If this option is true, detected Change of Name will saved in history.txt
-LogPlayerNameChange: true
+log-player-rename: true
 
 #If this option is true, all online players will see detected change of name in their chat. 
-NotifyRename: true
+notify-rename: true
 
 #If this option is true, players will see renamed player's old name on joining. 
-NotifyPreviousNameOnJoin: true
+notify-previous-name-on-join: true
 
 #How long should we notify previous name for the player? in day.
-NofifyPreviousNameTerm: 14
+notify-previous-name-days: 14
 
 #If this option is true, console command written here will be executed.
-#%oldname% will be replaced to the name before changed.
-#%newname% will be new name.
-ExecuteCommandOnNameChange: true
-Commands:
-- 'broadcast &7* &b%oldname% &7has changed its name. New one is: &b%newname%'
+#%old-name% will be replaced to the name before changed.
+#%new-name% will be new name.
+commands-on-rename:
+- 'broadcast &7* &b%old-name% &7has changed its name. New one is: &b%new-name%'
+
+#The number of account that is connecting from same ip.
+max-accounds: 3
 
 #If ScoreboardMigration is true, new player-name entry will have all old player-name entry's score on any objective.
 #For example,
@@ -29,5 +31,3 @@ Commands:
 #And then, if ResetOldScore is set true, Entry Named OldMan will lose all migrated score.
 ScoreboardMigration: true
 ResetOldScore: true
-
-InventoryBackupInterval: 30

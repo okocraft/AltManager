@@ -1,0 +1,39 @@
+plugin:
+  prefix: "&8[&6AltManager&8]&r"
+
+other:
+  rename-notification: "&7&b%old-name% &7は改名して&b %new-name% &7になったようだ"
+  previous-notification: "&7&b%player% &7の昔の名前は &b%old-name% &7です。"
+  alts-format: "&7&b%player% &7のaltアカウント: &b%alts%"
+
+command:
+  general:
+    no-permission: "&c権限がありません。"
+    invalid-argument: "&c引数 %argument% は不正です。"
+    not-enough-arguments: "&c引数が足りません。"
+    player-not-found: "&b%player%&7というプレイヤーは見つかりませんでした。"
+    player-only: "&cこのコマンドはプレイヤーにしか実行できません。"
+    command-does-not-exist: "&c%command% というコマンドは存在しません。"
+    usage-format: "使用法: %usage%"
+  authorize:
+    alt-authorized: "&7&b%player-1%&7 と &b%player-2% &7を非altアカウントとして認証しました。"
+    not-same-ip: "&7&b%player-1%&7 と &b%player-2% &7は同じIpから接続していません。"
+  unauthorize:
+    alt-unauthorized: "&7&b%player%&7 は再び同じIpの他のプレイヤーのaltアカウントと見做されました。"
+    no-authorized-players: "&7&b%player% &7は誰とも認証されていません。"
+  reload:
+    success: "&7設定を再読込しました。"
+  help:
+    header: "&7=----- &6AltManager Help &7-----="
+    format: "&b%usage%\n  - &a%description%"
+    command-description:
+      help: "このヘルプを表示します。"
+      authorize: "同じIPの二人を別人として認証します。"
+      unauthorize: "他の人全てとの認証を解除します。"
+      authorizedlist: "全ての認証されたプレイヤーを表示します。"
+      getip: "指定したプレイヤーのIPを表示します。"
+      onlinealts: "現在接続中のaltアカウント持ちを全て表示します。"
+      previousname: "指定したプレイヤーの一つ前の名前を表示します。"
+      reload: "設定を再読込します。"
+      search: "指定した人の認証されたaltアカウントを検索します。\n  &b- &atrueにすると認証されたアカウントも含めます。(デフォでfalse)"
+      uniqueaccess: "altアカウントを含めない現在接続中の人数を調べます。"
