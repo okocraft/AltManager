@@ -141,10 +141,6 @@ public class PlayerListener implements Listener {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ChatColor.translateAlternateColorCodes('&', command)
                     .replaceAll("%old-name%", oldName).replaceAll("%new-name%", newName));
         });
-
-        //if (config.isScoreMigrationEnabled()) {
-        //    migrateScores(uuid, newName, oldName);
-        //}
     }
 
     private void logNameChange(String uuid, String newName, String oldName) {
@@ -159,20 +155,4 @@ public class PlayerListener implements Listener {
             e.printStackTrace();
         }
     }
-
-    /*
-    private void migrateScores(String uuid, String newName, String oldName) {
-        Scoreboard mainScoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
-        Set<Objective> Objectives = mainScoreboard.getObjectives();
-
-        Objectives.forEach(objective -> {
-            Score score = objective.getScore(oldName);
-            if (score.isScoreSet())
-                objective.getScore(newName).setScore(score.getScore());
-        });
-
-        if (config.isOldScoreResetEnabled())
-            mainScoreboard.resetScores(oldName);
-    }
-    */
 }
