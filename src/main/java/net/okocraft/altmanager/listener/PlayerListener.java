@@ -25,6 +25,7 @@ import net.okocraft.altmanager.AltManager;
 import net.okocraft.altmanager.config.Config;
 import net.okocraft.altmanager.config.Messages;
 import net.okocraft.altmanager.database.Database;
+import net.okocraft.altmanager.event.PlayerRenameLoginEvent;
 
 public class PlayerListener implements Listener {
     
@@ -123,6 +124,7 @@ public class PlayerListener implements Listener {
     }
 
     private void onNameChanged(Player player, String newName, String oldName) {
+        Bukkit.getPluginManager().callEvent(new PlayerRenameLoginEvent(player, oldName));
         String uuid = player.getUniqueId().toString();
         database.updateName(oldName, newName);
 
