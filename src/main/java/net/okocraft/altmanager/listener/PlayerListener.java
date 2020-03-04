@@ -61,7 +61,10 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         handleIP(event);
-        notifyPreviousName(event);
+
+        if (config.notifyPreviousName()) {
+            notifyPreviousName(event);
+        }
     }
 
     private void handleIP(PlayerJoinEvent event) {
@@ -109,7 +112,7 @@ public class PlayerListener implements Listener {
         try {
             LocalDateTime term = LocalDateTime.parse(renameLogOnDate, AltManager.getTimeFormat())
                     .plusDays(config.getNotificationPreviousNameDays());
-            if (config.notifyPreviousName() && term.compareTo(now) >= 0) {
+            if (term.compareTo(now) >= 0) {
                 Bukkit.getOnlinePlayers().forEach(online -> 
                         Messages.getInstance().sendPreviousName(
                                 online,
