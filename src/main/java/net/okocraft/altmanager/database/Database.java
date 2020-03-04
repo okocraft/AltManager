@@ -317,7 +317,7 @@ public class Database {
     }
 
     public void updateName(String oldName, String newName) {
-        execute("UPDATE " + TABLE_NAME + " SET player = '" + newName + "', renamelogondate = '" + LocalDateTime.now(ZoneId.systemDefault()).format(AltManager.getTimeFormat()) + "' WHERE player = '" + oldName + "'");
+        execute("UPDATE " + TABLE_NAME + " SET previous = '" + oldName + "', player = '" + newName + "', renamelogondate = '" + LocalDateTime.now(ZoneId.systemDefault()).format(AltManager.getTimeFormat()) + "' WHERE player = '" + oldName + "'");
     }
 
     /**
