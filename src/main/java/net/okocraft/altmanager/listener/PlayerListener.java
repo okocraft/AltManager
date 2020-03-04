@@ -146,7 +146,6 @@ public class PlayerListener implements Listener {
     private void logNameChange(String uuid, String newName, String oldName) {
         try {
             Path log = AltManager.getInstance().getDataFolder().toPath().resolve("rename.log");
-            Files.createFile(log);
             Files.write(log,
                     (uuid + "\n" + String.format("%-16s", oldName) + " -> " + newName + "\n")
                             .getBytes(),
