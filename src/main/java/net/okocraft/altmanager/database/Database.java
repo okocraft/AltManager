@@ -345,6 +345,12 @@ public class Database {
     }
 
     public void dispose() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
         if (!hikari.isClosed()) {
             hikari.close();
         }
