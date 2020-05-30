@@ -1,7 +1,6 @@
 package net.okocraft.altmanager.listener;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -9,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -48,11 +48,14 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
-        int maxAccount = config.getMaxAccounts();
-        boolean isMoreThanMax = Bukkit.getOnlinePlayers().stream().map(Player::getAddress)
-                .map(InetSocketAddress::getHostName).filter(address -> event.getAddress().getHostName().equals(address))
-                .count() > maxAccount;
-        if (isMoreThanMax) {
+        int count = 0;
+        String hostName = event.getAddress().getHostName();
+        for (Player player : new HashSet<>(Bukkit.getOnlinePlayers())) {
+            if (player.getAddress().getHostName().equals(hostName)) {
+                count++;
+            }
+        }
+        if (count > config.getMaxAccounts()) {
             event.setLoginResult(Result.KICK_OTHER);
             event.setKickMessage(ChatColor.RED + "Too many alts.");
         }
